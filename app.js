@@ -105,7 +105,7 @@ function renderTable() {
 
   if (rows.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="9"><div class="empty">' +
+      '<tr><td colspan="10"><div class="empty">' +
       '<div class="empty-icon">📋</div>' +
       '<div class="empty-text">Aucune réservation pour ce filtre.</div>' +
       '</div></td></tr>';
@@ -139,6 +139,7 @@ function renderTable() {
       '<td>'                 + esc(r.nom)                             + '</td>' +
       '<td class="td-muted">'+ esc(r.email)                          + '</td>' +
       '<td class="td-muted">'+ esc(r.telephone)                      + '</td>' +
+      '<td class="td-muted">'+ esc(r.adresse || '—')                 + '</td>' +
       '<td>'                 + badge                                  + '</td>' +
       '<td>'                 + action                                 + '</td>' +
       '</tr>';
