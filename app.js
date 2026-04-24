@@ -201,9 +201,9 @@ function renderTable() {
       '<td class="td-ref" title="'    + esc(r.reference) + '">' + esc(r.reference)  + '</td>' +
       '<td title="'                   + formatDate(r.date) + '">' + formatDate(r.date) + '</td>' +
       '<td class="td-muted" title="'  + esc(heure) + '">'  + esc(heure)             + '</td>' +
+      '<td class="td-muted" title="'  + esc(adresse) + '">' + esc(adresse)           + '</td>' +
       '<td>'                          + formatMeuble(r.type_meuble)                  + '</td>' +
       '<td title="'                   + esc(r.nom) + '">'   + esc(r.nom)             + '</td>' +
-      '<td class="td-muted" title="'  + esc(adresse) + '">' + esc(adresse)           + '</td>' +
       '<td class="td-muted" title="'  + esc(r.email) + '">' + esc(r.email)           + '</td>' +
       '<td class="td-muted" title="'  + esc(r.telephone) + '">' + esc(r.telephone)  + '</td>' +
       '<td>'                          + badge                                         + '</td>' +

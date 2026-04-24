@@ -562,12 +562,8 @@ tbody tr:hover td:nth-child(10) { background: var(--surface-container-low); }
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .page-header { flex-direction: column; }
-  thead th:nth-child(4),
-  tbody td:nth-child(4) { display: none; }
 }
 
 @media (max-width: 600px) {
   .card { padding: 1.25rem 1rem; }
-  thead th:nth-child(5),
-  tbody td:nth-child(5) { display: none; }
 }
