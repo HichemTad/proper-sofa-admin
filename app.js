@@ -1,0 +1,272 @@
+/* ── Config ─────────────────────────────────────────── */
+var SUPA_URL     = 'https://xiyfxsoiaclvdkphqpty.supabase.co';
+var SUPA_SERVICE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpeWZ4c29pYWNsdmRrcGhxcHR5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjkxMTczNiwiZXhwIjoyMDkyNDg3NzM2fQ.IHDlxNHJVOi5cBHOZjLkh67Rbsjq9qgeP_0kLt3vmtw';
+var RESEND_KEY   = 're_J4rkZ3Ww_9xFDneu53YRJqwTntDoiSt3Q';
+var EMAIL_FROM   = 'onboarding@resend.dev';
+
+/* ── State ───────────────────────────────────────────── */
+var allReservations = [];
+var currentFilter   = 'all';
+
+/* ── Supabase helpers (direct REST, no SDK) ──────────── */
+function supaHeaders() {
+  return {
+    'apikey':        SUPA_SERVICE,
+    'Authorization': 'Bearer ' + SUPA_SERVICE,
+    'Content-Type':  'application/json'
+  };
+}
+
+async function dbSelect() {
+  var res = await fetch(
+    SUPA_URL + '/rest/v1/reservations?select=*&order=created_at.desc',
+    { headers: supaHeaders() }
+  );
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function dbUpdate(id, fields) {
+  var res = await fetch(
+    SUPA_URL + '/rest/v1/reservations?id=eq.' + id,
+    { method: 'PATCH', headers: supaHeaders(), body: JSON.stringify(fields) }
+  );
+  if (!res.ok) throw new Error(await res.text());
+}
+
+/* ── Boot ────────────────────────────────────────────── */
+(function init() {
+  var token = localStorage.getItem('ps_admin_token');
+  if (!token || !token.startsWith('eyJ')) {
+    localStorage.removeItem('ps_admin_token');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  var email = localStorage.getItem('ps_admin_email') || '';
+  document.getElementById('nav-user').textContent = email;
+
+  document.getElementById('logout-btn').addEventListener('click', function() {
+    localStorage.removeItem('ps_admin_token');
+    localStorage.removeItem('ps_admin_email');
+    window.location.href = 'index.html';
+  });
+
+  document.getElementById('refresh-btn').addEventListener('click', loadReservations);
+
+  document.getElementById('filter-tabs').addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+    currentFilter = tab.dataset.filter;
+    renderTable();
+  });
+
+  loadReservations();
+})();
+
+/* ── Load reservations ───────────────────────────────── */
+async function loadReservations() {
+  var btn = document.getElementById('refresh-btn');
+  btn.disabled = true;
+
+  try {
+    allReservations = await dbSelect();
+    updateStats();
+    renderTable();
+    var now = new Date();
+    document.getElementById('last-refresh').textContent =
+      'Mis à jour à ' + now.getHours() + 'h' + String(now.getMinutes()).padStart(2, '0');
+  } catch(err) {
+    showToast('Erreur chargement : ' + err.message, 'error');
+  }
+
+  btn.disabled = false;
+}
+
+/* ── Stats ───────────────────────────────────────────── */
+function updateStats() {
+  document.getElementById('stat-total').textContent =
+    allReservations.length;
+  document.getElementById('stat-pending').textContent =
+    allReservations.filter(function(r) { return r.statut === 'en_attente'; }).length;
+  document.getElementById('stat-accepted').textContent =
+    allReservations.filter(function(r) { return r.statut === 'acceptee'; }).length;
+}
+
+/* ── Render table ────────────────────────────────────── */
+function renderTable() {
+  var rows = allReservations.filter(function(r) {
+    return currentFilter === 'all' || r.statut === currentFilter;
+  });
+
+  var tbody = document.getElementById('table-body');
+
+  if (rows.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="9"><div class="empty">' +
+      '<div class="empty-icon">📋</div>' +
+      '<div class="empty-text">Aucune réservation pour ce filtre.</div>' +
+      '</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(function(r) {
+    var isPending = r.statut === 'en_attente';
+
+    var badge = isPending
+      ? '<span class="badge badge-pending">En attente</span>'
+      : '<span class="badge badge-accepted">Acceptée</span>';
+
+    var action = isPending
+      ? '<button class="btn btn-success btn-sm accept-btn"' +
+        ' data-id="'     + esc(r.id)          + '"' +
+        ' data-ref="'    + esc(r.reference)   + '"' +
+        ' data-date="'   + esc(r.date)        + '"' +
+        ' data-heure="'  + esc(r.heure)       + '"' +
+        ' data-meuble="' + esc(r.type_meuble) + '"' +
+        ' data-nom="'    + esc(r.nom)         + '"' +
+        ' data-email="'  + esc(r.email)       + '">' +
+        '✓ Accepter</button>'
+      : '<span class="td-muted">—</span>';
+
+    return '<tr>' +
+      '<td class="td-ref">'  + esc(r.reference)                      + '</td>' +
+      '<td>'                 + formatDate(r.date)                     + '</td>' +
+      '<td class="td-muted">'+ esc(r.heure ? r.heure.slice(0,5):'—') + '</td>' +
+      '<td>'                 + esc(r.type_meuble)                     + '</td>' +
+      '<td>'                 + esc(r.nom)                             + '</td>' +
+      '<td class="td-muted">'+ esc(r.email)                          + '</td>' +
+      '<td class="td-muted">'+ esc(r.telephone)                      + '</td>' +
+      '<td>'                 + badge                                  + '</td>' +
+      '<td>'                 + action                                 + '</td>' +
+      '</tr>';
+  }).join('');
+
+  tbody.querySelectorAll('.accept-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      acceptReservation(
+        btn.dataset.id,  btn.dataset.ref,   btn.dataset.date,
+        btn.dataset.heure, btn.dataset.meuble, btn.dataset.nom, btn.dataset.email
+      );
+    });
+  });
+}
+
+/* ── Accept reservation ──────────────────────────────── */
+async function acceptReservation(id, ref, date, heure, meuble, nom, email) {
+  var btn = document.querySelector('.accept-btn[data-id="' + id + '"]');
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+
+  try {
+    await dbUpdate(id, { statut: 'acceptee' });
+  } catch(err) {
+    showToast('Erreur mise à jour : ' + err.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '✓ Accepter'; }
+    return;
+  }
+
+  var emailOk = await sendConfirmationEmail(email, nom, ref, date, heure, meuble);
+
+  if (emailOk) {
+    showToast('Réservation ' + ref + ' acceptée — email envoyé à ' + email, 'success');
+  } else {
+    showToast('Statut mis à jour, mais l\'email n\'a pas pu être envoyé.', 'error');
+  }
+
+  var idx = allReservations.findIndex(function(r) { return r.id === id; });
+  if (idx !== -1) allReservations[idx].statut = 'acceptee';
+  updateStats();
+  renderTable();
+}
+
+/* ── Send email via Resend ───────────────────────────── */
+async function sendConfirmationEmail(to, nom, ref, date, heure, meuble) {
+  var prenom = nom.split(' ')[0];
+  try {
+    var res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + RESEND_KEY
+      },
+      body: JSON.stringify({
+        from:    'Proper Sofa <' + EMAIL_FROM + '>',
+        to:      [to],
+        subject: 'Votre réservation ' + ref + ' est confirmée ✓',
+        html:    buildEmailHtml(prenom, ref, date, heure, meuble)
+      })
+    });
+    var data = await res.json();
+    console.log('[Resend]', res.status, JSON.stringify(data));
+    return res.ok;
+  } catch(e) {
+    console.error('[Resend error]', e);
+    return false;
+  }
+}
+
+/* ── Email HTML template ─────────────────────────────── */
+function buildEmailHtml(prenom, ref, date, heure, meuble) {
+  var h = heure ? heure.slice(0, 5) : '—';
+  return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/></head>' +
+  '<body style="margin:0;padding:0;background:#f7f9ff;font-family:Arial,sans-serif;">' +
+  '<table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;">' +
+  '<tr><td align="center"><table width="100%" style="max-width:560px;">' +
+
+  '<tr><td style="background:#485d92;border-radius:20px 20px 0 0;padding:32px 40px;text-align:center;">' +
+  '<p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.65);">Proper Sofa</p>' +
+  '<h1 style="margin:0;font-size:24px;font-weight:700;color:#fff;">Réservation confirmée ✓</h1>' +
+  '</td></tr>' +
+
+  '<tr><td style="background:#fff;padding:36px 40px;border-radius:0 0 20px 20px;box-shadow:0 4px 40px rgba(0,0,0,.07);">' +
+  '<p style="margin:0 0 20px;font-size:16px;color:#181c20;">Bonjour <strong>' + esc(prenom) + '</strong>,</p>' +
+  '<p style="margin:0 0 28px;font-size:15px;color:#44464f;line-height:1.7;">Nous confirmons votre réservation. Notre équipe sera présente au créneau convenu pour nettoyer vos tissus d\'ameublement.</p>' +
+
+  '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f4f9;border-radius:14px;padding:24px;margin-bottom:28px;">' +
+  '<tr><td>' +
+  row('Référence', ref,            '#485d92', true) +
+  row('Date',      formatDate(date), '#181c20', false) +
+  row('Créneau',   h,               '#181c20', false) +
+  row('Mobilier',  meuble,          '#181c20', false) +
+  '</td></tr></table>' +
+
+  '<p style="margin:0;font-size:15px;color:#181c20;line-height:1.7;">À très bientôt,<br/><strong>L\'équipe Proper Sofa</strong></p>' +
+  '</td></tr>' +
+
+  '<tr><td style="padding:20px 0;text-align:center;">' +
+  '<p style="margin:0;font-size:12px;color:#44464f;">© ' + new Date().getFullYear() + ' Proper Sofa</p>' +
+  '</td></tr>' +
+
+  '</table></td></tr></table></body></html>';
+}
+
+function row(label, value, color, bold) {
+  return '<table width="100%" cellpadding="4" cellspacing="0" style="margin-bottom:8px;"><tr>' +
+    '<td style="width:110px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#44464f;">' + esc(label) + '</td>' +
+    '<td style="font-size:15px;color:' + color + ';' + (bold ? 'font-weight:700;' : '') + '">' + esc(value || '—') + '</td>' +
+    '</tr></table>';
+}
+
+/* ── Helpers ─────────────────────────────────────────── */
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  var d = new Date(dateStr + 'T00:00:00');
+  var DAYS   = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  var MONTHS = ['jan.','fév.','mars','avr.','mai','juin','juil.','août','sep.','oct.','nov.','déc.'];
+  return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function esc(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg, type) {
+  var el = document.createElement('div');
+  el.className = 'toast toast-' + (type === 'error' ? 'error' : 'success');
+  el.textContent = msg;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(function() { el.remove(); }, 4500);
+}

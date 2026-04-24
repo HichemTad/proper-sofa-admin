@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Réservations — Proper Sofa Admin</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <a class="nav-logo" href="dashboard.html">
+    <img src="../Proper Sofa/asset/LOGO.svg" alt="Proper Sofa" />
+    <span class="nav-badge">Admin</span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-user" id="nav-user"></span>
+    <button class="btn btn-ghost btn-sm" id="logout-btn">Déconnexion</button>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="page-wrap">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Réservations</h1>
+      <p class="page-subtitle" id="last-refresh"></p>
+    </div>
+    <button class="btn btn-secondary" id="refresh-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Actualiser
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total</div>
+      <div class="stat-value" id="stat-total">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">En attente</div>
+      <div class="stat-value" id="stat-pending" style="color:var(--warning)">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Acceptées</div>
+      <div class="stat-value" id="stat-accepted" style="color:var(--success)">—</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="tabs" id="filter-tabs" style="margin-bottom:1.25rem;">
+    <button class="tab active" data-filter="all">Toutes</button>
+    <button class="tab" data-filter="en_attente">En attente</button>
+    <button class="tab" data-filter="acceptee">Acceptées</button>
+  </div>
+
+  <!-- Table card -->
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="table-wrap">
+      <table id="reservations-table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Date</th>
+            <th>Créneau</th>
+            <th>Mobilier</th>
+            <th>Client</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Statut</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="9"><div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Chargement…</div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── Toast container ── -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

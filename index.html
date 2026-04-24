@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proper Sofa — Admin</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <img src="../Proper Sofa/asset/LOGO.svg" alt="Proper Sofa" />
+      <span class="nav-badge">Admin</span>
+    </div>
+
+    <h1 class="login-title">Connexion</h1>
+    <p class="login-sub">Accès réservé à l'équipe Proper Sofa.</p>
+
+    <form class="login-form" id="login-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="email">Adresse email</label>
+        <input class="form-input" type="email" id="email" name="email"
+               placeholder="vous@exemple.fr" autocomplete="email" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Mot de passe</label>
+        <input class="form-input" type="password" id="password" name="password"
+               placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+
+      <p class="error-msg" id="error-msg" role="alert"></p>
+
+      <button type="submit" class="btn btn-primary" id="login-btn" style="width:100%;justify-content:center;padding:13px;">
+        <span class="btn-text">Se connecter</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  var SUPA_URL  = 'https://xiyfxsoiaclvdkphqpty.supabase.co';
+  var SUPA_ANON = 'sb_publishable_vcwJFD2FUaqfjf9IQVr7cw_pG-9Cggz';
+
+  // Already logged in → go to dashboard (only if token looks like a real JWT)
+  var _tok = localStorage.getItem('ps_admin_token');
+  if (_tok && _tok.startsWith('eyJ')) {
+    window.location.href = 'dashboard.html';
+  }
+
+  var form  = document.getElementById('login-form');
+  var btn   = document.getElementById('login-btn');
+  var errEl = document.getElementById('error-msg');
+
+  function setLoading(on) {
+    btn.classList.toggle('loading', on);
+    btn.disabled = on;
+  }
+
+  function showError(msg) {
+    errEl.textContent = msg;
+    errEl.classList.add('visible');
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    errEl.classList.remove('visible');
+
+    var email    = form.email.value.trim();
+    var password = form.password.value;
+
+    if (!email || !password) { showError('Veuillez remplir tous les champs.'); return; }
+
+    setLoading(true);
+
+    var res = await fetch(SUPA_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'apikey': SUPA_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+
+    var data = await res.json();
+
+    if (!res.ok) {
+      setLoading(false);
+      showError('Email ou mot de passe incorrect.');
+      return;
+    }
+
+    localStorage.setItem('ps_admin_token', data.access_token);
+    localStorage.setItem('ps_admin_email', email);
+    window.location.href = 'dashboard.html';
+  });
+</script>
+</body>
+</html>
