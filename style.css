@@ -224,6 +224,72 @@ tbody td {
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
+/* ── Res table (flex rows) ── */
+.res-table { width: 100%; min-width: 900px; }
+
+.res-header-row,
+.res-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.res-header-row {
+  background: var(--surface-container-low);
+  border-bottom: 2px solid var(--surface-variant);
+  padding: .65rem 1rem;
+  position: sticky;
+  top: 0;
+}
+
+.res-header-row .res-btn-col {
+  /* empty placeholder aligned with button column */
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.res-header-row .res-data > div {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.res-row {
+  border-bottom: 1px solid var(--surface-container);
+  padding: .75rem 1rem;
+  transition: background .12s;
+}
+.res-row:last-child { border-bottom: none; }
+.res-row:hover { background: var(--surface-container-low); }
+
+.res-btn-col {
+  width: 90px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.res-data {
+  display: grid;
+  grid-template-columns: 120px 130px 65px 110px 130px 180px 115px 1fr 100px;
+  gap: .5rem 1rem;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  font-size: .875rem;
+}
+
+.res-data > div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ── Empty state ── */
 .empty {
   text-align: center;

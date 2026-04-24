@@ -58,28 +58,33 @@
     <button class="tab" data-filter="acceptee">Acceptées</button>
   </div>
 
-  <!-- Table card -->
+  <!-- Reservations list -->
   <div class="card" style="padding:0;overflow:hidden;">
     <div class="table-wrap">
-      <table id="reservations-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Référence</th>
-            <th>Date</th>
-            <th>Créneau</th>
-            <th>Mobilier</th>
-            <th>Client</th>
-            <th>Email</th>
-            <th>Téléphone</th>
-            <th>Adresse</th>
-            <th>Statut</th>
-          </tr>
-        </thead>
-        <tbody id="table-body">
-          <tr><td colspan="10"><div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Chargement…</div></div></td></tr>
-        </tbody>
-      </table>
+      <div class="res-table">
+
+        <!-- Header -->
+        <div class="res-header-row">
+          <div class="res-btn-col"></div>
+          <div class="res-data">
+            <div>Référence</div>
+            <div>Date</div>
+            <div>Créneau</div>
+            <div>Mobilier</div>
+            <div>Client</div>
+            <div>Email</div>
+            <div>Téléphone</div>
+            <div>Adresse</div>
+            <div>Statut</div>
+          </div>
+        </div>
+
+        <!-- Rows -->
+        <div id="table-body">
+          <div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Chargement…</div></div>
+        </div>
+
+      </div>
     </div>
   </div>
 

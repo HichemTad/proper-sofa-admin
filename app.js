@@ -105,10 +105,10 @@ function renderTable() {
 
   if (rows.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="10"><div class="empty">' +
+      '<div class="empty">' +
       '<div class="empty-icon">📋</div>' +
       '<div class="empty-text">Aucune réservation pour ce filtre.</div>' +
-      '</div></td></tr>';
+      '</div>';
     return;
   }
 
@@ -131,18 +131,20 @@ function renderTable() {
         'Accepter</button>'
       : '';
 
-    return '<tr>' +
-      '<td style="width:1%;white-space:nowrap;">' + action            + '</td>' +
-      '<td class="td-ref">'  + esc(r.reference)                      + '</td>' +
-      '<td>'                 + formatDate(r.date)                     + '</td>' +
-      '<td class="td-muted">'+ esc(r.heure ? r.heure.slice(0,5):'—') + '</td>' +
-      '<td>'                 + esc(r.type_meuble)                     + '</td>' +
-      '<td>'                 + esc(r.nom)                             + '</td>' +
-      '<td class="td-muted">'+ esc(r.email)                          + '</td>' +
-      '<td class="td-muted">'+ esc(r.telephone)                      + '</td>' +
-      '<td class="td-muted">'+ esc(r.adresse || '—')                 + '</td>' +
-      '<td>'                 + badge                                  + '</td>' +
-      '</tr>';
+    return '<div class="res-row">' +
+      '<div class="res-btn-col">'  + action                                   + '</div>' +
+      '<div class="res-data">' +
+        '<div class="td-ref">'     + esc(r.reference)                         + '</div>' +
+        '<div>'                    + formatDate(r.date)                        + '</div>' +
+        '<div class="td-muted">'   + esc(r.heure ? r.heure.slice(0,5) : '—') + '</div>' +
+        '<div>'                    + esc(r.type_meuble)                        + '</div>' +
+        '<div>'                    + esc(r.nom)                                + '</div>' +
+        '<div class="td-muted">'   + esc(r.email)                             + '</div>' +
+        '<div class="td-muted">'   + esc(r.telephone)                         + '</div>' +
+        '<div class="td-muted">'   + esc(r.adresse || '—')                    + '</div>' +
+        '<div>'                    + badge                                     + '</div>' +
+      '</div>' +
+      '</div>';
   }).join('');
 
   tbody.querySelectorAll('.accept-btn').forEach(function(btn) {
