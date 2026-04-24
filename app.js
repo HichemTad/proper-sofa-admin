@@ -256,9 +256,9 @@ function row(label, value, color, bold) {
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   var d = new Date(dateStr + 'T00:00:00');
-  var DAYS   = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-  var MONTHS = ['jan.','fév.','mars','avr.','mai','juin','juil.','août','sep.','oct.','nov.','déc.'];
-  return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+  return String(d.getDate()).padStart(2,'0') + '/' +
+         String(d.getMonth() + 1).padStart(2,'0') + '/' +
+         d.getFullYear();
 }
 
 function esc(str) {
