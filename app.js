@@ -263,17 +263,26 @@ function initResizableColumns() {
 
   var cols = table.querySelectorAll('colgroup col');
   var ths  = table.querySelectorAll('thead th');
+  var last = ths.length - 1;
 
   ths.forEach(function(th, i) {
     if (!cols[i]) return;
 
-    // Snapshot initial rendered width into the colgroup
-    cols[i].style.width = th.offsetWidth + 'px';
+    // Wrap th content in a flex inner div
+    var inner = document.createElement('div');
+    inner.className = 'th-inner';
+    inner.innerHTML = th.innerHTML;
+    th.innerHTML = '';
+    th.appendChild(inner);
 
+    // First and last columns are not resizable — no icon
+    if (i === 0 || i === last) return;
+
+    // Create resize icon and prepend it before the title text
     var handle = document.createElement('div');
     handle.className = 'col-resizer';
     handle.title = 'Redimensionner la colonne';
-    th.appendChild(handle);
+    inner.insertBefore(handle, inner.firstChild);
 
     var startX = 0, startW = 0;
 
@@ -285,7 +294,7 @@ function initResizableColumns() {
       document.body.style.userSelect = 'none';
 
       function onMove(e) {
-        var newW = Math.max(48, startW + (e.pageX - startX));
+        var newW = Math.max(40, startW + (e.pageX - startX));
         cols[i].style.width = newW + 'px';
       }
       function onUp() {

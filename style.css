@@ -176,27 +176,26 @@ body {
 .tab:hover:not(.active) { background: var(--surface-container-high); }
 
 /* ── Table ── */
-.table-wrap { overflow-x: auto; border-radius: var(--radius-lg); }
+.table-wrap { overflow: hidden; border-radius: var(--radius-lg); }
 
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: .875rem;
   table-layout: fixed;
-  min-width: 960px;
 }
 
-/* Column widths */
-table colgroup col:nth-child(1)  { width: 115px; } /* Référence */
-table colgroup col:nth-child(2)  { width: 90px;  } /* Date */
-table colgroup col:nth-child(3)  { width: 68px;  } /* Créneau */
-table colgroup col:nth-child(4)  { width: 120px; } /* Mobilier */
-table colgroup col:nth-child(5)  { width: 120px; } /* Client */
-table colgroup col:nth-child(6)  { width: 160px; } /* Email */
-table colgroup col:nth-child(7)  { width: 105px; } /* Téléphone */
-table colgroup col:nth-child(8)  { width: auto;  } /* Adresse */
-table colgroup col:nth-child(9)  { width: 95px;  } /* Statut */
-table colgroup col:nth-child(10) { width: 46px;  } /* Action */
+/* Proportional column widths — no min-width, adapts to screen */
+table colgroup col:nth-child(1)  { width: 10%;  } /* Référence */
+table colgroup col:nth-child(2)  { width: 8%;   } /* Date */
+table colgroup col:nth-child(3)  { width: 6%;   } /* Créneau */
+table colgroup col:nth-child(4)  { width: 9%;   } /* Mobilier */
+table colgroup col:nth-child(5)  { width: 9%;   } /* Client */
+table colgroup col:nth-child(6)  { width: 12%;  } /* Email */
+table colgroup col:nth-child(7)  { width: 9%;   } /* Téléphone */
+table colgroup col:nth-child(8)  { width: 24%;  } /* Adresse */
+table colgroup col:nth-child(9)  { width: 8%;   } /* Statut */
+table colgroup col:nth-child(10) { width: 5%;   } /* Action */
 
 thead th {
   padding: .7rem 1rem;
@@ -239,24 +238,25 @@ tbody td {
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
-/* Column resize handle */
-thead th { position: relative; }
+/* th flex layout */
+thead th { overflow: hidden; }
 
-.col-resizer {
-  position: absolute;
-  top: 50%;
-  right: 2px;
-  transform: translateY(-50%);
-  width: 14px;
-  height: 14px;
-  cursor: col-resize;
-  z-index: 1;
+.th-inner {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+/* Resize icon — left of column title */
+.col-resizer {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  cursor: col-resize;
   opacity: .35;
   transition: opacity .15s;
-  background: url('asset/resize.svg') center / 12px 12px no-repeat;
+  background: url('asset/resize.svg') center / 16px 16px no-repeat;
 }
 .col-resizer:hover,
 .col-resizer.active {
