@@ -284,6 +284,11 @@ function initResizableColumns() {
     var startX = 0, startW = 0;
 
     sep.addEventListener('mousedown', function(e) {
+      // Snapshot ALL columns to px before any resize — prevents jump from % → px mix
+      ths.forEach(function(th2, j) {
+        if (cols[j]) cols[j].style.width = th2.offsetWidth + 'px';
+      });
+
       startX = e.pageX;
       startW = targetTh ? targetTh.offsetWidth : 0;
       sep.classList.add('active');
@@ -291,7 +296,6 @@ function initResizableColumns() {
       document.body.style.userSelect = 'none';
 
       function onMove(e) {
-        // col 0 sep drags right → Date grows; col N sep drags right → col N grows
         var delta = (i === 0) ? -(e.pageX - startX) : (e.pageX - startX);
         var newW = Math.max(40, startW + delta);
         if (targetCol) targetCol.style.width = newW + 'px';
