@@ -370,12 +370,14 @@ document.addEventListener('click', function(e) {
 function buildCalButton(r) {
   return '<span class="cal-wrap">' +
     '<button class="btn-check btn-cal" title="Ajouter au calendrier"' +
-    ' data-ref="'    + esc(r.reference)    + '"' +
-    ' data-date="'   + esc(r.date)         + '"' +
-    ' data-heure="'  + esc(r.heure || '')  + '"' +
-    ' data-nom="'    + esc(r.nom)          + '"' +
-    ' data-meuble="' + esc(r.type_meuble)  + '"' +
-    ' data-adresse="'+ esc(r.adresse || '')+ '">' +
+    ' data-ref="'    + esc(r.reference)      + '"' +
+    ' data-date="'   + esc(r.date)           + '"' +
+    ' data-heure="'  + esc(r.heure || '')    + '"' +
+    ' data-nom="'    + esc(r.nom)            + '"' +
+    ' data-meuble="' + esc(r.type_meuble)    + '"' +
+    ' data-adresse="'+ esc(r.adresse || '')  + '"' +
+    ' data-email="'  + esc(r.email || '')    + '"' +
+    ' data-tel="'    + esc(r.telephone || '')+ '">' +
     '<img src="asset/calendar.svg" width="16" height="16" alt="Calendrier" />' +
     '</button>' +
     '<div class="cal-menu">' +
@@ -423,7 +425,14 @@ function calDt(dateStr, heureStr, addHours) {
 }
 
 function buildGoogleUrl(d) {
-  var details = 'Client : ' + d.nom + '\nMobilier : ' + d.meuble + '\nRéférence : ' + d.ref;
+  var details = [
+    'Client : '     + d.nom,
+    'Téléphone : '  + (d.tel      || '—'),
+    'Email : '      + (d.email    || '—'),
+    'Mobilier : '   + d.meuble,
+    'Adresse : '    + (d.adresse  || '—'),
+    'Référence : '  + d.ref
+  ].join('\n');
   return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
     '&text='     + encodeURIComponent('Nettoyage Proper Sofa – ' + d.ref) +
     '&dates='    + calDt(d.date, d.heure) + '/' + calDt(d.date, d.heure, 2) +
@@ -440,7 +449,12 @@ function downloadIcs(d) {
     'DTSTART:'   + calDt(d.date, d.heure),
     'DTEND:'     + calDt(d.date, d.heure, 2),
     'SUMMARY:Nettoyage Proper Sofa – ' + d.ref,
-    'DESCRIPTION:Client : ' + d.nom + '\\nMobilier : ' + d.meuble,
+    'DESCRIPTION:Client : '    + d.nom           +
+      '\\nTéléphone : '        + (d.tel      || '—') +
+      '\\nEmail : '            + (d.email    || '—') +
+      '\\nMobilier : '         + d.meuble         +
+      '\\nAdresse : '          + (d.adresse  || '—') +
+      '\\nRéférence : '        + d.ref,
     'LOCATION:'  + (d.adresse || ''),
     'END:VEVENT',
     'END:VCALENDAR'
