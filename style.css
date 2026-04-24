@@ -195,7 +195,7 @@ table colgroup col:nth-child(6)  { width: 12%;  } /* Email */
 table colgroup col:nth-child(7)  { width: 9%;   } /* Téléphone */
 table colgroup col:nth-child(8)  { width: 24%;  } /* Adresse */
 table colgroup col:nth-child(9)  { width: 8%;   } /* Statut */
-table colgroup col:nth-child(10) { width: 5%;   } /* Action */
+table colgroup col:nth-child(10) { width: 48px; } /* Action — fixed px so button always fits */
 
 thead th {
   padding: .7rem 1rem;
@@ -267,9 +267,6 @@ thead th { position: relative; overflow: hidden; }
   width: 2px;
 }
 
-/* Fixed separator (first column) — visual only, no resize cursor */
-.col-sep-fixed { cursor: default; }
-.col-sep-fixed:hover::before { background: var(--surface-variant); width: 1.5px; }
 
 /* ── Meuble drawer ── */
 .meuble-wrap {
@@ -297,14 +294,12 @@ thead th { position: relative; overflow: hidden; }
 
 .meuble-drawer {
   display: none;
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 200;
+  position: fixed; /* escapes table overflow clipping */
+  z-index: 9999;
   background: #fff;
   border: 1.5px solid var(--surface-variant);
   border-radius: var(--radius-md);
-  box-shadow: 0 8px 24px rgba(0,0,0,.10);
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
   padding: .6rem .85rem;
   min-width: 140px;
   flex-direction: column;

@@ -268,29 +268,33 @@ function initResizableColumns() {
   ths.forEach(function(th, i) {
     if (!cols[i]) return;
 
-    // No separator on the last column
+    // No separator after the last column
     if (i === last) return;
 
-    // Inject separator at right edge of th
     var sep = document.createElement('div');
-    sep.className = i === 0 ? 'col-sep col-sep-fixed' : 'col-sep';
+    sep.className = 'col-sep';
     th.appendChild(sep);
 
-    // First column: separator is visual only, no drag
-    if (i === 0) return;
+    // The separator at the right of col i resizes col i,
+    // EXCEPT for col 0 (Référence, fixed) → it resizes col 1 (Date) instead
+    var targetIdx = (i === 0) ? 1 : i;
+    var targetTh  = ths[targetIdx];
+    var targetCol = cols[targetIdx];
 
     var startX = 0, startW = 0;
 
     sep.addEventListener('mousedown', function(e) {
       startX = e.pageX;
-      startW = th.offsetWidth;
+      startW = targetTh ? targetTh.offsetWidth : 0;
       sep.classList.add('active');
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
 
       function onMove(e) {
-        var newW = Math.max(40, startW + (e.pageX - startX));
-        if (cols[i]) cols[i].style.width = newW + 'px';
+        // col 0 sep drags right → Date grows; col N sep drags right → col N grows
+        var delta = (i === 0) ? -(e.pageX - startX) : (e.pageX - startX);
+        var newW = Math.max(40, startW + delta);
+        if (targetCol) targetCol.style.width = newW + 'px';
       }
       function onUp() {
         sep.classList.remove('active');
@@ -341,12 +345,23 @@ function formatMeuble(str) {
 
 function toggleDrawer(btn) {
   var wrap = btn.closest('.meuble-wrap');
-  var isOpen = wrap.classList.toggle('open');
-  // Close all other open drawers
+  var isOpen = !wrap.classList.contains('open');
+
+  // Close all open drawers first
   document.querySelectorAll('.meuble-wrap.open').forEach(function(w) {
-    if (w !== wrap) w.classList.remove('open');
+    w.classList.remove('open');
   });
-  wrap.classList.toggle('open', isOpen);
+
+  if (isOpen) {
+    wrap.classList.add('open');
+    // Position drawer using fixed coords (escapes all overflow clipping)
+    var rect = btn.getBoundingClientRect();
+    var drawer = wrap.querySelector('.meuble-drawer');
+    if (drawer) {
+      drawer.style.top  = (rect.bottom + 4) + 'px';
+      drawer.style.left = rect.left + 'px';
+    }
+  }
 }
 
 // Close drawers when clicking outside
