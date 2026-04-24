@@ -239,15 +239,15 @@ tbody td {
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
 /* Column separator / resize handle */
-thead th { position: relative; overflow: hidden; }
+thead th { position: relative; overflow: visible; }
 
 .col-sep {
   position: absolute;
-  right: -3px;   /* straddles the border between two th */
+  right: -4px;   /* centered on the th boundary */
   top: 0; bottom: 0;
-  width: 7px;    /* generous click zone */
+  width: 8px;    /* generous click zone */
   cursor: col-resize;
-  z-index: 2;
+  z-index: 10;   /* above adjacent th content */
   display: flex;
   justify-content: center;
 }
@@ -265,6 +265,14 @@ thead th { position: relative; overflow: hidden; }
 .col-sep.active::before {
   background: var(--primary);
   width: 2px;
+}
+
+/* Clip th text content but not the separator */
+thead th > :not(.col-sep) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 

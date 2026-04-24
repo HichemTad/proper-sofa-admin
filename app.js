@@ -296,7 +296,7 @@ function initResizableColumns() {
       document.body.style.userSelect = 'none';
 
       function onMove(e) {
-        var delta = (i === 0) ? -(e.pageX - startX) : (e.pageX - startX);
+        var delta = e.pageX - startX;
         var newW = Math.max(40, startW + delta);
         if (targetCol) targetCol.style.width = newW + 'px';
       }
