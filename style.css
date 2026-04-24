@@ -266,8 +266,8 @@ tbody tr:hover td:nth-child(10) { background: var(--surface-container-low); }
 /* ── Calendar button & menu ── */
 .cal-wrap { position: relative; display: inline-block; }
 
-.btn-cal { background: var(--surface-container); }
-.btn-cal:hover {
+.btn-check.btn-cal { background: var(--surface-container); }
+.btn-check.btn-cal:hover {
   background: var(--surface-container-high);
   box-shadow: 0 3px 10px rgba(0,0,0,.12);
 }
