@@ -141,7 +141,7 @@ function updateStats() {
 function updateStickyOffsets() {
   var actionTh = document.querySelector('thead th:nth-child(11)');
   if (!actionTh) return;
-  document.documentElement.style.setProperty('--action-col-w', actionTh.offsetWidth + 'px');
+  document.documentElement.style.setProperty('--action-col-w', (actionTh.offsetWidth - 1) + 'px');
 }
 
 /* ── Render table ────────────────────────────────────── */
