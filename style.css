@@ -181,7 +181,8 @@ body {
 table {
   width: max-content;
   min-width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: .875rem;
 }
 
@@ -200,10 +201,8 @@ thead th {
 thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
 
 tbody tr {
-  border-bottom: 1px solid var(--surface-container);
   transition: background .12s;
 }
-tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: var(--surface-container-low); }
 
 tbody td {
@@ -211,7 +210,9 @@ tbody td {
   vertical-align: middle;
   color: var(--on-surface);
   white-space: nowrap;
+  border-bottom: 1px solid var(--surface-container);
 }
+tbody tr:last-child td { border-bottom: none; }
 
 .td-ref {
   font-family: 'Fira Sans', sans-serif;

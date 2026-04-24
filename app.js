@@ -54,6 +54,17 @@ async function dbUpdate(id, fields) {
 
   document.getElementById('refresh-btn').addEventListener('click', loadReservations);
 
+  /* Scroll horizontal avec la molette */
+  var tableWrap = document.querySelector('.table-wrap');
+  if (tableWrap) {
+    tableWrap.addEventListener('wheel', function(e) {
+      if (tableWrap.scrollWidth > tableWrap.clientWidth) {
+        e.preventDefault();
+        tableWrap.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+  }
+
   document.getElementById('filter-tabs').addEventListener('click', function(e) {
     var tab = e.target.closest('.tab');
     if (!tab) return;
