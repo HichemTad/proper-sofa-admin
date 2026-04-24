@@ -238,31 +238,38 @@ tbody td {
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
-/* th flex layout */
-thead th { overflow: hidden; }
+/* Column separator / resize handle */
+thead th { position: relative; overflow: hidden; }
 
-.th-inner {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow: hidden;
-}
-
-/* Resize icon — left of column title */
-.col-resizer {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+.col-sep {
+  position: absolute;
+  right: -3px;   /* straddles the border between two th */
+  top: 0; bottom: 0;
+  width: 7px;    /* generous click zone */
   cursor: col-resize;
-  opacity: .35;
-  transition: opacity .15s;
-  background: url('asset/resize.svg') center / 16px 16px no-repeat;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
 }
-.col-resizer:hover,
-.col-resizer.active {
-  opacity: 1;
-  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14 15L17 12L14 9M10 9L7 12L10 15' stroke='%23485d92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+/* Visual line */
+.col-sep::before {
+  content: '';
+  width: 1.5px;
+  background: var(--surface-variant);
+  border-radius: 2px;
+  transition: background .15s, width .15s;
 }
+
+.col-sep:hover::before,
+.col-sep.active::before {
+  background: var(--primary);
+  width: 2px;
+}
+
+/* Fixed separator (first column) — visual only, no resize cursor */
+.col-sep-fixed { cursor: default; }
+.col-sep-fixed:hover::before { background: var(--surface-variant); width: 1.5px; }
 
 /* ── Meuble drawer ── */
 .meuble-wrap {

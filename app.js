@@ -268,37 +268,32 @@ function initResizableColumns() {
   ths.forEach(function(th, i) {
     if (!cols[i]) return;
 
-    // Wrap th content in a flex inner div
-    var inner = document.createElement('div');
-    inner.className = 'th-inner';
-    inner.innerHTML = th.innerHTML;
-    th.innerHTML = '';
-    th.appendChild(inner);
+    // No separator on the last column
+    if (i === last) return;
 
-    // First and last columns are not resizable — no icon
-    if (i === 0 || i === last) return;
+    // Inject separator at right edge of th
+    var sep = document.createElement('div');
+    sep.className = i === 0 ? 'col-sep col-sep-fixed' : 'col-sep';
+    th.appendChild(sep);
 
-    // Create resize icon and prepend it before the title text
-    var handle = document.createElement('div');
-    handle.className = 'col-resizer';
-    handle.title = 'Redimensionner la colonne';
-    inner.insertBefore(handle, inner.firstChild);
+    // First column: separator is visual only, no drag
+    if (i === 0) return;
 
     var startX = 0, startW = 0;
 
-    handle.addEventListener('mousedown', function(e) {
+    sep.addEventListener('mousedown', function(e) {
       startX = e.pageX;
       startW = th.offsetWidth;
-      handle.classList.add('active');
+      sep.classList.add('active');
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
 
       function onMove(e) {
         var newW = Math.max(40, startW + (e.pageX - startX));
-        cols[i].style.width = newW + 'px';
+        if (cols[i]) cols[i].style.width = newW + 'px';
       }
       function onUp() {
-        handle.classList.remove('active');
+        sep.classList.remove('active');
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
         document.removeEventListener('mousemove', onMove);
