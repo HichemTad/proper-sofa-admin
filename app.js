@@ -69,9 +69,9 @@ async function dbUpdate(id, fields) {
     }, { passive: false });
   }
 
-  document.querySelectorAll('.sort-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var col = btn.dataset.sort;
+  document.querySelectorAll('.th-sort').forEach(function(th) {
+    th.addEventListener('click', function() {
+      var col = th.dataset.sort;
       if (sortCol === col) {
         sortDir = -sortDir;
       } else {
@@ -133,10 +133,10 @@ function updateStickyOffsets() {
 
 /* ── Render table ────────────────────────────────────── */
 function updateSortUI() {
-  document.querySelectorAll('.sort-btn').forEach(function(btn) {
-    btn.classList.remove('sort-asc', 'sort-desc');
-    if (btn.dataset.sort === sortCol) {
-      btn.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+  document.querySelectorAll('.th-sort').forEach(function(th) {
+    th.classList.remove('sort-asc', 'sort-desc');
+    if (th.dataset.sort === sortCol) {
+      th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
     }
   });
 }

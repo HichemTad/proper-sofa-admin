@@ -200,23 +200,24 @@ thead th {
 }
 thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
 
-.sort-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
+.th-sort {
   cursor: pointer;
-  padding: 0 0 0 5px;
-  opacity: .35;
-  transition: opacity .15s;
-  vertical-align: middle;
+  user-select: none;
+  white-space: nowrap;
 }
-.sort-btn:hover { opacity: .7; }
-.sort-btn.sort-asc,
-.sort-btn.sort-desc { opacity: 1; }
-.sort-btn.sort-asc  img { transform: rotate(180deg); } /* flèche haut active */
-.sort-btn.sort-desc img { transform: none; }           /* flèche bas active  */
+.th-sort:hover { background: var(--surface-container); }
+
+.sort-icon {
+  margin-left: 5px;
+  vertical-align: middle;
+  opacity: .35;
+  transition: opacity .15s, transform .15s;
+}
+.th-sort:hover    .sort-icon { opacity: .7; }
+.th-sort.sort-asc .sort-icon,
+.th-sort.sort-desc .sort-icon { opacity: 1; }
+.th-sort.sort-asc  .sort-icon { transform: rotate(180deg); }
+.th-sort.sort-desc .sort-icon { transform: none; }
 
 tbody tr {
   transition: background .12s;
