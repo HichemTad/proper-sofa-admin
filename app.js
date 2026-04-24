@@ -7,7 +7,6 @@ var EMAIL_FROM   = 'onboarding@resend.dev';
 /* ── State ───────────────────────────────────────────── */
 var allReservations = [];
 var currentFilter   = 'all';
-var maxColWidths    = [];
 
 /* ── Supabase helpers (direct REST, no SDK) ──────────── */
 function supaHeaders() {
@@ -54,7 +53,6 @@ async function dbUpdate(id, fields) {
   });
 
   document.getElementById('refresh-btn').addEventListener('click', loadReservations);
-  initResizableColumns();
 
   document.getElementById('filter-tabs').addEventListener('click', function(e) {
     var tab = e.target.closest('.tab');
@@ -151,9 +149,6 @@ function renderTable() {
       '<td class="td-action">'        + action                                        + '</td>' +
       '</tr>';
   }).join('');
-
-  // Measure max content widths after DOM paint
-  requestAnimationFrame(computeMaxWidths);
 
   tbody.querySelectorAll('.accept-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
@@ -260,77 +255,6 @@ function row(label, value, color, bold) {
     '</tr></table>';
 }
 
-/* ── Measure max content width per column ────────────── */
-function computeMaxWidths() {
-  var table = document.getElementById('reservations-table');
-  if (!table) return;
-  var ths = table.querySelectorAll('thead th');
-  maxColWidths = [];
-  ths.forEach(function(th, i) {
-    var max = th.scrollWidth;
-    table.querySelectorAll('tbody tr td:nth-child(' + (i + 1) + ')').forEach(function(td) {
-      max = Math.max(max, td.scrollWidth);
-    });
-    maxColWidths[i] = max;
-  });
-}
-
-/* ── Resizable columns ───────────────────────────────── */
-function initResizableColumns() {
-  var table = document.getElementById('reservations-table');
-  if (!table) return;
-
-  var cols = table.querySelectorAll('colgroup col');
-  var ths  = table.querySelectorAll('thead th');
-  var last = ths.length - 1;
-
-  ths.forEach(function(th, i) {
-    if (!cols[i]) return;
-
-    // No separator after the last column
-    if (i === last) return;
-
-    var sep = document.createElement('div');
-    sep.className = 'col-sep';
-    th.appendChild(sep);
-
-    // The separator at the right of col i always resizes col i
-    var targetTh  = th;
-    var targetCol = cols[i];
-
-    var startX = 0, startW = 0;
-
-    sep.addEventListener('mousedown', function(e) {
-      // Snapshot ALL columns to px before any resize — prevents jump from % → px mix
-      ths.forEach(function(th2, j) {
-        if (cols[j]) cols[j].style.width = th2.offsetWidth + 'px';
-      });
-
-      startX = e.pageX;
-      startW = targetTh ? targetTh.offsetWidth : 0;
-      sep.classList.add('active');
-      document.body.style.cursor = 'col-resize';
-      document.body.style.userSelect = 'none';
-
-      function onMove(e) {
-        var delta  = e.pageX - startX;
-        var maxW   = maxColWidths[i] || Infinity;
-        var newW   = Math.min(maxW, Math.max(40, startW + delta));
-        if (targetCol) targetCol.style.width = newW + 'px';
-      }
-      function onUp() {
-        sep.classList.remove('active');
-        document.body.style.cursor = '';
-        document.body.style.userSelect = '';
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-      }
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-      e.preventDefault();
-    });
-  });
-}
 
 /* ── Meuble formatter ────────────────────────────────── */
 function parseMeuble(str) {

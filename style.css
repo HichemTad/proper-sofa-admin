@@ -176,26 +176,14 @@ body {
 .tab:hover:not(.active) { background: var(--surface-container-high); }
 
 /* ── Table ── */
-.table-wrap { overflow: hidden; border-radius: var(--radius-lg); }
+.table-wrap { overflow-x: auto; border-radius: var(--radius-lg); }
 
 table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
   font-size: .875rem;
-  table-layout: fixed;
 }
-
-/* Proportional column widths — no min-width, adapts to screen */
-table colgroup col:nth-child(1)  { width: 10%;  } /* Référence */
-table colgroup col:nth-child(2)  { width: 8%;   } /* Date */
-table colgroup col:nth-child(3)  { width: 6%;   } /* Créneau */
-table colgroup col:nth-child(4)  { width: 9%;   } /* Mobilier */
-table colgroup col:nth-child(5)  { width: 9%;   } /* Client */
-table colgroup col:nth-child(6)  { width: 12%;  } /* Email */
-table colgroup col:nth-child(7)  { width: 9%;   } /* Téléphone */
-table colgroup col:nth-child(8)  { width: 24%;  } /* Adresse */
-table colgroup col:nth-child(9)  { width: 8%;   } /* Statut */
-table colgroup col:nth-child(10) { width: 48px; } /* Action — fixed px so button always fits */
 
 thead th {
   padding: .7rem 1rem;
@@ -208,10 +196,8 @@ thead th {
   background: var(--surface-container-low);
   border-bottom: 2px solid var(--surface-variant);
   white-space: nowrap;
-  overflow: hidden;
 }
 thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
-thead th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
 
 tbody tr {
   border-bottom: 1px solid var(--surface-container);
@@ -225,9 +211,6 @@ tbody td {
   vertical-align: middle;
   color: var(--on-surface);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 0; /* required for ellipsis with table-layout:fixed */
 }
 
 .td-ref {
@@ -238,42 +221,36 @@ tbody td {
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
-/* Column separator / resize handle */
-thead th { position: relative; overflow: visible; }
-
-.col-sep {
-  position: absolute;
-  right: -4px;   /* centered on the th boundary */
-  top: 0; bottom: 0;
-  width: 8px;    /* generous click zone */
-  cursor: col-resize;
-  z-index: 10;   /* above adjacent th content */
-  display: flex;
-  justify-content: center;
+/* Sticky Statut + Action columns (always visible) */
+thead th:nth-child(9),
+thead th:nth-child(10),
+tbody td:nth-child(9),
+tbody td:nth-child(10) {
+  position: sticky;
+  right: 0;
 }
 
-/* Visual line */
-.col-sep::before {
-  content: '';
-  width: 1.5px;
-  background: var(--surface-variant);
-  border-radius: 2px;
-  transition: background .15s, width .15s;
+thead th:nth-child(9),
+tbody td:nth-child(9) {
+  right: 52px; /* width of Action column */
+  background: inherit;
+  box-shadow: -2px 0 6px rgba(0,0,0,.06);
 }
 
-.col-sep:hover::before,
-.col-sep.active::before {
-  background: var(--primary);
-  width: 2px;
+thead th:nth-child(10),
+tbody td:nth-child(10) {
+  right: 0;
+  width: 52px;
+  text-align: center;
+  background: inherit;
 }
 
-/* Clip th text content but not the separator */
-thead th > :not(.col-sep) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: block;
-}
+thead th:nth-child(9) { background: var(--surface-container-low); }
+thead th:nth-child(10) { background: var(--surface-container-low); border-radius: 0 var(--radius-sm) 0 0; }
+tbody tr:hover td:nth-child(9),
+tbody tr:hover td:nth-child(10) { background: var(--surface-container-low); }
+tbody td:nth-child(9),
+tbody td:nth-child(10) { background: #fff; }
 
 
 /* ── Meuble drawer ── */
