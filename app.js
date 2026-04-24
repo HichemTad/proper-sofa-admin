@@ -137,7 +137,7 @@ function renderTable() {
       '<td class="td-ref">'   + esc(r.reference)                         + '</td>' +
       '<td>'                  + formatDate(r.date)                        + '</td>' +
       '<td class="td-muted">' + esc(r.heure ? r.heure.slice(0,5) : '—') + '</td>' +
-      '<td>'                  + esc(r.type_meuble)                        + '</td>' +
+      '<td>'                  + formatMeuble(r.type_meuble)               + '</td>' +
       '<td>'                  + esc(r.nom)                                + '</td>' +
       '<td class="td-muted">' + esc(r.email)                             + '</td>' +
       '<td class="td-muted">' + esc(r.telephone)                         + '</td>' +
@@ -251,6 +251,58 @@ function row(label, value, color, bold) {
     '<td style="font-size:15px;color:' + color + ';' + (bold ? 'font-weight:700;' : '') + '">' + esc(value || '—') + '</td>' +
     '</tr></table>';
 }
+
+/* ── Meuble formatter ────────────────────────────────── */
+function parseMeuble(str) {
+  if (!str) return [];
+  return str.split(', ').map(function(part) {
+    var m = part.match(/^(\d+)[×x]\s*(.+)$/);
+    return m ? { qty: parseInt(m[1]), name: m[2].trim() } : { qty: 1, name: part.trim() };
+  });
+}
+
+function formatMeuble(str) {
+  var items = parseMeuble(str);
+  if (!items.length) return '—';
+
+  // Single furniture type
+  if (items.length === 1) {
+    return esc(items[0].qty > 1 ? items[0].name + ' x' + items[0].qty : items[0].name);
+  }
+
+  // Multiple types → badge + drawer
+  var label = items.length + ' meubles';
+  var lines = items.map(function(it) {
+    return '<span>' + esc(it.qty > 1 ? it.name + ' x' + it.qty : it.name) + '</span>';
+  }).join('');
+
+  return '<span class="meuble-wrap">' +
+    '<button class="meuble-badge" onclick="toggleDrawer(this)">' +
+      label +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>' +
+    '</button>' +
+    '<div class="meuble-drawer">' + lines + '</div>' +
+  '</span>';
+}
+
+function toggleDrawer(btn) {
+  var wrap = btn.closest('.meuble-wrap');
+  var isOpen = wrap.classList.toggle('open');
+  // Close all other open drawers
+  document.querySelectorAll('.meuble-wrap.open').forEach(function(w) {
+    if (w !== wrap) w.classList.remove('open');
+  });
+  wrap.classList.toggle('open', isOpen);
+}
+
+// Close drawers when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.meuble-wrap')) {
+    document.querySelectorAll('.meuble-wrap.open').forEach(function(w) {
+      w.classList.remove('open');
+    });
+  }
+});
 
 /* ── Helpers ─────────────────────────────────────────── */
 function formatDate(dateStr) {

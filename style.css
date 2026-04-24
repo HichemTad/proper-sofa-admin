@@ -224,6 +224,53 @@ tbody td {
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
+/* ── Meuble drawer ── */
+.meuble-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.meuble-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1.5px solid var(--surface-variant);
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s;
+}
+.meuble-badge:hover { background: var(--surface-container); border-color: var(--primary); }
+.meuble-wrap.open .meuble-badge { border-color: var(--primary); background: var(--primary-container); color: var(--on-primary-container); }
+.meuble-wrap.open .meuble-badge svg { transform: rotate(180deg); }
+
+.meuble-drawer {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  background: #fff;
+  border: 1.5px solid var(--surface-variant);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,.10);
+  padding: .6rem .85rem;
+  min-width: 140px;
+  flex-direction: column;
+  gap: .3rem;
+}
+.meuble-wrap.open .meuble-drawer { display: flex; }
+.meuble-drawer span {
+  font-size: .85rem;
+  color: var(--on-surface);
+  white-space: nowrap;
+  padding: 2px 0;
+}
+
 /* ── Check button (icon only) ── */
 .btn-check {
   display: inline-flex;
