@@ -54,6 +54,19 @@ async function dbUpdate(id, fields) {
     window.location.href = 'index.html';
   });
 
+  /* ── Burger menu ── */
+  var nav       = document.querySelector('.nav');
+  var burgerBtn = document.getElementById('burger-btn');
+  burgerBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    nav.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e) {
+    if (nav.classList.contains('open') && !e.target.closest('.nav')) {
+      nav.classList.remove('open');
+    }
+  });
+
   document.getElementById('refresh-btn').addEventListener('click', loadReservations);
 
   window.addEventListener('resize', updateStickyOffsets);
