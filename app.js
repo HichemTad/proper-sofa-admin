@@ -358,7 +358,11 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('.meuble-wrap.open').forEach(function(w) { w.classList.remove('open'); });
   }
   if (!e.target.closest('.cal-wrap')) {
-    document.querySelectorAll('.cal-wrap.open').forEach(function(w) { w.classList.remove('open'); });
+    document.querySelectorAll('.cal-wrap.open').forEach(function(w) {
+      w.classList.remove('open');
+      var parentTd = w.closest('td');
+      if (parentTd) parentTd.style.zIndex = '';
+    });
   }
 });
 
@@ -383,12 +387,23 @@ function buildCalButton(r) {
 
 function toggleCalMenu(btn) {
   var wrap = btn.closest('.cal-wrap');
+  var td   = btn.closest('td');
   var isOpen = !wrap.classList.contains('open');
-  document.querySelectorAll('.cal-wrap.open, .meuble-wrap.open').forEach(function(w) {
+
+  /* close everything and reset elevated z-index */
+  document.querySelectorAll('.cal-wrap.open').forEach(function(w) {
+    w.classList.remove('open');
+    var parentTd = w.closest('td');
+    if (parentTd) parentTd.style.zIndex = '';
+  });
+  document.querySelectorAll('.meuble-wrap.open').forEach(function(w) {
     w.classList.remove('open');
   });
+
   if (isOpen) {
     wrap.classList.add('open');
+    /* lift the sticky td above its siblings so the fixed menu isn't clipped */
+    if (td) td.style.zIndex = '200';
     var rect = btn.getBoundingClientRect();
     var menu = wrap.querySelector('.cal-menu');
     if (menu) {
