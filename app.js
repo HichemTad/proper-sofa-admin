@@ -275,11 +275,9 @@ function initResizableColumns() {
     sep.className = 'col-sep';
     th.appendChild(sep);
 
-    // The separator at the right of col i resizes col i,
-    // EXCEPT for col 0 (Référence, fixed) → it resizes col 1 (Date) instead
-    var targetIdx = (i === 0) ? 1 : i;
-    var targetTh  = ths[targetIdx];
-    var targetCol = cols[targetIdx];
+    // The separator at the right of col i always resizes col i
+    var targetTh  = th;
+    var targetCol = cols[i];
 
     var startX = 0, startW = 0;
 
