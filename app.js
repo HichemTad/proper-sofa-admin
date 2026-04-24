@@ -105,10 +105,11 @@ function renderTable() {
 
   if (rows.length === 0) {
     tbody.innerHTML =
-      '<div class="empty">' +
-      '<div class="empty-icon">📋</div>' +
-      '<div class="empty-text">Aucune réservation pour ce filtre.</div>' +
-      '</div>';
+      '<div class="res-unit"><div class="res-action-col"></div>' +
+      '<div class="res-cells res-cells-empty">' +
+      '<div class="empty"><div class="empty-icon">📋</div>' +
+      '<div class="empty-text">Aucune réservation pour ce filtre.</div></div>' +
+      '</div></div>';
     return;
   }
 
@@ -131,18 +132,18 @@ function renderTable() {
         'Accepter</button>'
       : '';
 
-    return '<div class="res-row">' +
-      '<div class="res-btn-col">'  + action                                   + '</div>' +
-      '<div class="res-data">' +
-        '<div class="td-ref">'     + esc(r.reference)                         + '</div>' +
-        '<div>'                    + formatDate(r.date)                        + '</div>' +
-        '<div class="td-muted">'   + esc(r.heure ? r.heure.slice(0,5) : '—') + '</div>' +
-        '<div>'                    + esc(r.type_meuble)                        + '</div>' +
-        '<div>'                    + esc(r.nom)                                + '</div>' +
-        '<div class="td-muted">'   + esc(r.email)                             + '</div>' +
-        '<div class="td-muted">'   + esc(r.telephone)                         + '</div>' +
-        '<div class="td-muted">'   + esc(r.adresse || '—')                    + '</div>' +
-        '<div>'                    + badge                                     + '</div>' +
+    return '<div class="res-unit">' +
+      '<div class="res-action-col">' + action + '</div>' +
+      '<div class="res-cells">' +
+        '<div class="td-ref">'   + esc(r.reference)                         + '</div>' +
+        '<div>'                  + formatDate(r.date)                        + '</div>' +
+        '<div class="td-muted">' + esc(r.heure ? r.heure.slice(0,5) : '—') + '</div>' +
+        '<div>'                  + esc(r.type_meuble)                        + '</div>' +
+        '<div>'                  + esc(r.nom)                                + '</div>' +
+        '<div class="td-muted">' + esc(r.email)                             + '</div>' +
+        '<div class="td-muted">' + esc(r.telephone)                         + '</div>' +
+        '<div class="td-muted">' + esc(r.adresse || '—')                    + '</div>' +
+        '<div>'                  + badge                                     + '</div>' +
       '</div>' +
       '</div>';
   }).join('');

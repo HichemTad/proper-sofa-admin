@@ -59,32 +59,31 @@
   </div>
 
   <!-- Reservations list -->
-  <div class="card" style="padding:0;overflow:hidden;">
-    <div class="table-wrap">
-      <div class="res-table">
+  <!-- Outer wrapper: scroll horizontally if needed -->
+  <div class="res-scroll">
+    <div class="res-list" id="res-list">
 
-        <!-- Header -->
-        <div class="res-header-row">
-          <div class="res-btn-col"></div>
-          <div class="res-data">
-            <div>Référence</div>
-            <div>Date</div>
-            <div>Créneau</div>
-            <div>Mobilier</div>
-            <div>Client</div>
-            <div>Email</div>
-            <div>Téléphone</div>
-            <div>Adresse</div>
-            <div>Statut</div>
-          </div>
+      <!-- Header row -->
+      <div class="res-unit res-unit-header">
+        <div class="res-action-col"></div>
+        <div class="res-cells">
+          <div>Référence</div>
+          <div>Date</div>
+          <div>Créneau</div>
+          <div>Mobilier</div>
+          <div>Client</div>
+          <div>Email</div>
+          <div>Téléphone</div>
+          <div>Adresse</div>
+          <div>Statut</div>
         </div>
-
-        <!-- Rows -->
-        <div id="table-body">
-          <div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Chargement…</div></div>
-        </div>
-
       </div>
+
+      <!-- Data rows injected by app.js -->
+      <div id="table-body">
+        <div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Chargement…</div></div>
+      </div>
+
     </div>
   </div>
 
