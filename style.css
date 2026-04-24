@@ -244,15 +244,25 @@ thead th { position: relative; }
 
 .col-resizer {
   position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 5px;
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
   cursor: col-resize;
   z-index: 1;
-  border-radius: 0 2px 2px 0;
-  transition: background .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .35;
+  transition: opacity .15s;
+  background: url('asset/resize.svg') center / 12px 12px no-repeat;
 }
 .col-resizer:hover,
-.col-resizer.active { background: var(--primary); opacity: .5; }
+.col-resizer.active {
+  opacity: 1;
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14 15L17 12L14 9M10 9L7 12L10 15' stroke='%23485d92' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
 
 /* ── Meuble drawer ── */
 .meuble-wrap {

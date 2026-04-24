@@ -272,6 +272,7 @@ function initResizableColumns() {
 
     var handle = document.createElement('div');
     handle.className = 'col-resizer';
+    handle.title = 'Redimensionner la colonne';
     th.appendChild(handle);
 
     var startX = 0, startW = 0;
