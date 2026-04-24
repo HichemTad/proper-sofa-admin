@@ -224,91 +224,39 @@ tbody td {
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
-/* ── Reservations layout ── */
-
-/* Outer scroll container */
-.res-scroll {
-  overflow-x: auto;
-}
-
-/* Full list: column of units */
-.res-list {
-  display: flex;
-  flex-direction: column;
-  min-width: 900px;
-}
-
-/* Each unit = [button outside] + [white data cells] */
-.res-unit {
-  display: flex;
-  align-items: stretch; /* makes both sides same height */
-}
-
-/* Left column: action button, truly outside the white card */
-.res-action-col {
-  width: 100px;
-  flex-shrink: 0;
-  display: flex;
+/* ── Check button (icon only) ── */
+.btn-check {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding-right: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--success-container);
+  cursor: pointer;
+  transition: background .18s, transform .15s, box-shadow .18s;
 }
 
-/* Right column: white data area */
-.res-cells {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 110px 125px 65px 110px 120px 175px 110px 1fr 100px;
-  gap: .4rem .75rem;
-  align-items: center;
-  padding: .8rem 1rem;
-  background: #fff;
-  border-bottom: 1px solid var(--surface-container);
-  font-size: .875rem;
-  overflow: hidden;
+.btn-check:hover {
+  background: #c8e6c9;
+  transform: scale(1.15);
+  box-shadow: 0 4px 14px rgba(46,125,50,.25);
 }
 
-.res-cells > div {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.btn-check:active {
+  transform: scale(.95);
 }
 
-/* Header row */
-.res-unit-header .res-cells {
-  background: var(--surface-container-low);
-  border-bottom: 2px solid var(--surface-variant);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+.btn-check:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.res-unit-header .res-cells > div {
-  font-size: .68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  color: var(--on-surface-variant);
-}
-
-/* Last data row: rounded bottom */
-.res-unit:last-child .res-cells {
-  border-bottom: none;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-}
-
-/* Hover */
-.res-unit:not(.res-unit-header):hover .res-cells {
-  background: var(--surface-container-low);
-}
-
-/* Card shadow on the white block */
-.res-list {
-  filter: drop-shadow(0 4px 20px rgba(0,0,0,.06));
-}
-
-/* Empty state inside layout */
-.res-cells-empty {
-  grid-template-columns: 1fr !important;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+.td-action {
+  width: 50px;
+  text-align: center;
 }
 
 /* ── Empty state ── */

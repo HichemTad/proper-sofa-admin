@@ -105,11 +105,10 @@ function renderTable() {
 
   if (rows.length === 0) {
     tbody.innerHTML =
-      '<div class="res-unit"><div class="res-action-col"></div>' +
-      '<div class="res-cells res-cells-empty">' +
-      '<div class="empty"><div class="empty-icon">📋</div>' +
-      '<div class="empty-text">Aucune réservation pour ce filtre.</div></div>' +
-      '</div></div>';
+      '<tr><td colspan="10"><div class="empty">' +
+      '<div class="empty-icon">📋</div>' +
+      '<div class="empty-text">Aucune réservation pour ce filtre.</div>' +
+      '</div></td></tr>';
     return;
   }
 
@@ -121,7 +120,8 @@ function renderTable() {
       : '<span class="badge badge-accepted">Acceptée</span>';
 
     var action = isPending
-      ? '<button class="btn btn-success btn-sm accept-btn"' +
+      ? '<button class="btn-check accept-btn"' +
+        ' title="Accepter cette réservation"' +
         ' data-id="'     + esc(r.id)          + '"' +
         ' data-ref="'    + esc(r.reference)   + '"' +
         ' data-date="'   + esc(r.date)        + '"' +
@@ -129,23 +129,22 @@ function renderTable() {
         ' data-meuble="' + esc(r.type_meuble) + '"' +
         ' data-nom="'    + esc(r.nom)         + '"' +
         ' data-email="'  + esc(r.email)       + '">' +
-        'Accepter</button>'
+        '<img src="asset/Check.svg" width="20" height="20" alt="Accepter" />' +
+        '</button>'
       : '';
 
-    return '<div class="res-unit">' +
-      '<div class="res-action-col">' + action + '</div>' +
-      '<div class="res-cells">' +
-        '<div class="td-ref">'   + esc(r.reference)                         + '</div>' +
-        '<div>'                  + formatDate(r.date)                        + '</div>' +
-        '<div class="td-muted">' + esc(r.heure ? r.heure.slice(0,5) : '—') + '</div>' +
-        '<div>'                  + esc(r.type_meuble)                        + '</div>' +
-        '<div>'                  + esc(r.nom)                                + '</div>' +
-        '<div class="td-muted">' + esc(r.email)                             + '</div>' +
-        '<div class="td-muted">' + esc(r.telephone)                         + '</div>' +
-        '<div class="td-muted">' + esc(r.adresse || '—')                    + '</div>' +
-        '<div>'                  + badge                                     + '</div>' +
-      '</div>' +
-      '</div>';
+    return '<tr>' +
+      '<td class="td-ref">'   + esc(r.reference)                         + '</td>' +
+      '<td>'                  + formatDate(r.date)                        + '</td>' +
+      '<td class="td-muted">' + esc(r.heure ? r.heure.slice(0,5) : '—') + '</td>' +
+      '<td>'                  + esc(r.type_meuble)                        + '</td>' +
+      '<td>'                  + esc(r.nom)                                + '</td>' +
+      '<td class="td-muted">' + esc(r.email)                             + '</td>' +
+      '<td class="td-muted">' + esc(r.telephone)                         + '</td>' +
+      '<td class="td-muted">' + esc(r.adresse || '—')                    + '</td>' +
+      '<td>'                  + badge                                     + '</td>' +
+      '<td class="td-action">'+ action                                    + '</td>' +
+      '</tr>';
   }).join('');
 
   tbody.querySelectorAll('.accept-btn').forEach(function(btn) {
