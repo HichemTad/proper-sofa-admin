@@ -495,7 +495,7 @@ function buildGoogleUrl(d) {
     'Référence : '  + d.ref
   ].join('\n');
   return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-    '&text='     + encodeURIComponent('Nettoyage Proper Sofa – ' + d.ref) +
+    '&text='     + encodeURIComponent('PS Nettoyage - ' + d.nom) +
     '&dates='    + calDt(d.date, d.heure) + '/' + calDt(d.date, d.heure, 2) +
     '&details='  + encodeURIComponent(details) +
     '&location=' + encodeURIComponent(d.adresse || '');
@@ -509,7 +509,7 @@ function downloadIcs(d) {
     'BEGIN:VEVENT',
     'DTSTART:'   + calDt(d.date, d.heure),
     'DTEND:'     + calDt(d.date, d.heure, 2),
-    'SUMMARY:Nettoyage Proper Sofa – ' + d.ref,
+    'SUMMARY:PS Nettoyage - ' + d.nom,
     'DESCRIPTION:Client : '    + d.nom           +
       '\\nTéléphone : '        + (d.tel      || '—') +
       '\\nEmail : '            + (d.email    || '—') +
