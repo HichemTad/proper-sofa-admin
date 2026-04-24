@@ -128,10 +128,11 @@ function renderTable() {
         ' data-meuble="' + esc(r.type_meuble) + '"' +
         ' data-nom="'    + esc(r.nom)         + '"' +
         ' data-email="'  + esc(r.email)       + '">' +
-        '✓ Accepter</button>'
-      : '<span class="td-muted">—</span>';
+        'Accepter</button>'
+      : '';
 
     return '<tr>' +
+      '<td style="width:1%;white-space:nowrap;">' + action            + '</td>' +
       '<td class="td-ref">'  + esc(r.reference)                      + '</td>' +
       '<td>'                 + formatDate(r.date)                     + '</td>' +
       '<td class="td-muted">'+ esc(r.heure ? r.heure.slice(0,5):'—') + '</td>' +
@@ -141,7 +142,6 @@ function renderTable() {
       '<td class="td-muted">'+ esc(r.telephone)                      + '</td>' +
       '<td class="td-muted">'+ esc(r.adresse || '—')                 + '</td>' +
       '<td>'                 + badge                                  + '</td>' +
-      '<td>'                 + action                                 + '</td>' +
       '</tr>';
   }).join('');
 
