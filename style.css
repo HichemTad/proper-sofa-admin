@@ -266,10 +266,10 @@ tbody tr:hover td:nth-child(10) { background: var(--surface-container-low); }
 /* ── Calendar button & menu ── */
 .cal-wrap { position: relative; display: inline-block; }
 
-.btn-cal { background: var(--primary-container); }
+.btn-cal { background: var(--surface-container); }
 .btn-cal:hover {
-  background: #c5cef5;
-  box-shadow: 0 3px 10px rgba(72,93,146,.28);
+  background: var(--surface-container-high);
+  box-shadow: 0 3px 10px rgba(0,0,0,.12);
 }
 
 .cal-menu {
