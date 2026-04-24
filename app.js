@@ -139,7 +139,7 @@ function updateStats() {
 
 /* ── Sticky offset calibration ───────────────────────── */
 function updateStickyOffsets() {
-  var actionTh = document.querySelector('thead th:nth-child(10)');
+  var actionTh = document.querySelector('thead th:nth-child(11)');
   if (!actionTh) return;
   document.documentElement.style.setProperty('--action-col-w', actionTh.offsetWidth + 'px');
 }
