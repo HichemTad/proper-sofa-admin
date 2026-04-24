@@ -176,7 +176,7 @@ body {
 .tab:hover:not(.active) { background: var(--surface-container-high); }
 
 /* ── Table ── */
-.table-wrap { overflow-x: auto; border-radius: var(--radius-lg); }
+.table-wrap { overflow-x: auto; border-radius: var(--radius-lg); position: relative; }
 
 table {
   width: max-content;
@@ -232,14 +232,14 @@ tbody td:nth-child(10) {
   z-index: 1;
 }
 
-/* Statut — offset by the width of Action column */
+/* Statut — offset dynamically via JS → --action-col-w */
 thead th:nth-child(9) {
-  right: 52px;
+  right: var(--action-col-w, 60px);
   background: var(--surface-container-low);
   box-shadow: -2px 0 6px rgba(0,0,0,.06);
 }
 tbody td:nth-child(9) {
-  right: 52px;
+  right: var(--action-col-w, 60px);
   background: #fff;
   box-shadow: -2px 0 6px rgba(0,0,0,.06);
 }

@@ -54,6 +54,8 @@ async function dbUpdate(id, fields) {
 
   document.getElementById('refresh-btn').addEventListener('click', loadReservations);
 
+  window.addEventListener('resize', updateStickyOffsets);
+
   /* Scroll horizontal avec la molette */
   var tableWrap = document.querySelector('.table-wrap');
   if (tableWrap) {
@@ -104,6 +106,13 @@ function updateStats() {
     allReservations.filter(function(r) { return r.statut === 'en_attente'; }).length;
   document.getElementById('stat-accepted').textContent =
     allReservations.filter(function(r) { return r.statut === 'acceptee'; }).length;
+}
+
+/* ── Sticky offset calibration ───────────────────────── */
+function updateStickyOffsets() {
+  var actionTh = document.querySelector('thead th:nth-child(10)');
+  if (!actionTh) return;
+  document.documentElement.style.setProperty('--action-col-w', actionTh.offsetWidth + 'px');
 }
 
 /* ── Render table ────────────────────────────────────── */
@@ -160,6 +169,8 @@ function renderTable() {
       '<td class="td-action">'        + action                                        + '</td>' +
       '</tr>';
   }).join('');
+
+  requestAnimationFrame(updateStickyOffsets);
 
   tbody.querySelectorAll('.accept-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
