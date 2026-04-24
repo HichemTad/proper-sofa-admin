@@ -371,7 +371,8 @@ function formatMeuble(str) {
   }
 
   // Multiple types → badge + drawer
-  var label = items.length + ' meubles';
+  var total = items.reduce(function(acc, it) { return acc + it.qty; }, 0);
+  var label = total + ' meubles';
   var lines = items.map(function(it) {
     return '<span>' + esc(it.qty > 1 ? it.name + ' x' + it.qty : it.name) + '</span>';
   }).join('');
