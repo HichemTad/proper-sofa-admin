@@ -151,7 +151,7 @@ function renderTable() {
         ' data-email="'  + esc(r.email)       + '">' +
         '<img src="asset/Check.svg" width="20" height="20" alt="Accepter" />' +
         '</button>'
-      : '';
+      : buildCalButton(r);
 
     var heure  = r.heure ? r.heure.slice(0,5) : '—';
     var adresse = r.adresse || '—';
@@ -178,6 +178,26 @@ function renderTable() {
         btn.dataset.id,  btn.dataset.ref,   btn.dataset.date,
         btn.dataset.heure, btn.dataset.meuble, btn.dataset.nom, btn.dataset.email
       );
+    });
+  });
+
+  tbody.querySelectorAll('.btn-cal').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleCalMenu(btn);
+    });
+  });
+
+  tbody.querySelectorAll('.cal-option').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var b = link.closest('.cal-wrap').querySelector('.btn-cal');
+      if (link.dataset.cal === 'google') {
+        window.open(buildGoogleUrl(b.dataset), '_blank');
+      } else {
+        downloadIcs(b.dataset);
+      }
+      link.closest('.cal-wrap').classList.remove('open');
     });
   });
 }
@@ -332,14 +352,92 @@ function toggleDrawer(btn) {
   }
 }
 
-// Close drawers when clicking outside
+// Close drawers / cal menus when clicking outside
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.meuble-wrap')) {
-    document.querySelectorAll('.meuble-wrap.open').forEach(function(w) {
-      w.classList.remove('open');
-    });
+    document.querySelectorAll('.meuble-wrap.open').forEach(function(w) { w.classList.remove('open'); });
+  }
+  if (!e.target.closest('.cal-wrap')) {
+    document.querySelectorAll('.cal-wrap.open').forEach(function(w) { w.classList.remove('open'); });
   }
 });
+
+/* ── Calendar button ─────────────────────────────────── */
+function buildCalButton(r) {
+  return '<span class="cal-wrap">' +
+    '<button class="btn-check btn-cal" title="Ajouter au calendrier"' +
+    ' data-ref="'    + esc(r.reference)    + '"' +
+    ' data-date="'   + esc(r.date)         + '"' +
+    ' data-heure="'  + esc(r.heure || '')  + '"' +
+    ' data-nom="'    + esc(r.nom)          + '"' +
+    ' data-meuble="' + esc(r.type_meuble)  + '"' +
+    ' data-adresse="'+ esc(r.adresse || '')+ '">' +
+    '<img src="asset/calendar.svg" width="16" height="16" alt="Calendrier" />' +
+    '</button>' +
+    '<div class="cal-menu">' +
+    '<a class="cal-option" data-cal="google" href="#">Google Calendar</a>' +
+    '<a class="cal-option" data-cal="apple"  href="#">Apple / iCal</a>' +
+    '</div>' +
+    '</span>';
+}
+
+function toggleCalMenu(btn) {
+  var wrap = btn.closest('.cal-wrap');
+  var isOpen = !wrap.classList.contains('open');
+  document.querySelectorAll('.cal-wrap.open, .meuble-wrap.open').forEach(function(w) {
+    w.classList.remove('open');
+  });
+  if (isOpen) {
+    wrap.classList.add('open');
+    var rect = btn.getBoundingClientRect();
+    var menu = wrap.querySelector('.cal-menu');
+    if (menu) {
+      menu.style.top  = (rect.bottom + 4) + 'px';
+      menu.style.left = rect.left + 'px';
+    }
+  }
+}
+
+/* ── Calendar helpers ────────────────────────────────── */
+function calDt(dateStr, heureStr, addHours) {
+  var d = (dateStr || '').replace(/-/g, '');
+  var parts = (heureStr || '08:00').slice(0, 5).split(':');
+  var hh = parseInt(parts[0], 10) + (addHours || 0);
+  var mm = parts[1] || '00';
+  return d + 'T' + String(hh).padStart(2, '0') + mm + '00';
+}
+
+function buildGoogleUrl(d) {
+  var details = 'Client : ' + d.nom + '\nMobilier : ' + d.meuble + '\nRéférence : ' + d.ref;
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    '&text='     + encodeURIComponent('Nettoyage Proper Sofa – ' + d.ref) +
+    '&dates='    + calDt(d.date, d.heure) + '/' + calDt(d.date, d.heure, 2) +
+    '&details='  + encodeURIComponent(details) +
+    '&location=' + encodeURIComponent(d.adresse || '');
+}
+
+function downloadIcs(d) {
+  var ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Proper Sofa//Admin//FR',
+    'BEGIN:VEVENT',
+    'DTSTART:'   + calDt(d.date, d.heure),
+    'DTEND:'     + calDt(d.date, d.heure, 2),
+    'SUMMARY:Nettoyage Proper Sofa – ' + d.ref,
+    'DESCRIPTION:Client : ' + d.nom + '\\nMobilier : ' + d.meuble,
+    'LOCATION:'  + (d.adresse || ''),
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+  var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'reservation-' + d.ref + '.ics';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 /* ── Helpers ─────────────────────────────────────────── */
 function formatDate(dateStr) {
