@@ -290,46 +290,47 @@ tbody tr:last-child td { border-bottom: none; }
   font-size: .85rem;
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
+.td-prix  { font-weight: 700; white-space: nowrap; }
 
 /* Sticky Statut + Action columns (always visible) */
-thead th:nth-child(9),
 thead th:nth-child(10),
-tbody td:nth-child(9),
-tbody td:nth-child(10) {
+thead th:nth-child(11),
+tbody td:nth-child(10),
+tbody td:nth-child(11) {
   position: sticky;
   right: 0;
   z-index: 1;
 }
 
 /* Statut — offset dynamically via JS → --action-col-w */
-thead th:nth-child(9) {
+thead th:nth-child(10) {
   right: var(--action-col-w, 60px);
   background: var(--surface-container-low);
   box-shadow: -2px 0 6px rgba(0,0,0,.06);
 }
-tbody td:nth-child(9) {
+tbody td:nth-child(10) {
   right: var(--action-col-w, 60px);
   background: #fff;
   box-shadow: -2px 0 6px rgba(0,0,0,.06);
 }
 
 /* Action */
-thead th:nth-child(10) {
+thead th:nth-child(11) {
   right: 0;
   width: 52px;
   text-align: center;
   background: var(--surface-container-low);
   border-radius: 0 var(--radius-sm) 0 0;
 }
-tbody td:nth-child(10) {
+tbody td:nth-child(11) {
   right: 0;
   width: 52px;
   text-align: center;
   background: #fff;
 }
 
-tbody tr:hover td:nth-child(9),
-tbody tr:hover td:nth-child(10) { background: var(--surface-container-low); }
+tbody tr:hover td:nth-child(10),
+tbody tr:hover td:nth-child(11) { background: var(--surface-container-low); }
 
 
 /* ── Calendar button & menu ── */

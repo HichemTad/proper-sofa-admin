@@ -219,6 +219,7 @@ function renderTable() {
       '<td title="'                   + esc(r.nom) + '">'   + esc(r.nom)             + '</td>' +
       '<td class="td-muted" title="'  + esc(r.email) + '">' + esc(r.email)           + '</td>' +
       '<td class="td-muted" title="'  + esc(r.telephone) + '">' + esc(r.telephone)  + '</td>' +
+      '<td class="td-prix">'          + (r.prix_total != null ? r.prix_total + ' €' : '—') + '</td>' +
       '<td>'                          + badge                                         + '</td>' +
       '<td class="td-action">'        + action                                        + '</td>' +
       '</tr>';
