@@ -7,6 +7,7 @@ var EMAIL_FROM   = 'onboarding@resend.dev';
 /* ── State ───────────────────────────────────────────── */
 var allReservations = [];
 var currentFilter   = 'all';
+var maxColWidths    = [];
 
 /* ── Supabase helpers (direct REST, no SDK) ──────────── */
 function supaHeaders() {
@@ -151,6 +152,9 @@ function renderTable() {
       '</tr>';
   }).join('');
 
+  // Measure max content widths after DOM paint
+  requestAnimationFrame(computeMaxWidths);
+
   tbody.querySelectorAll('.accept-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       acceptReservation(
@@ -256,6 +260,21 @@ function row(label, value, color, bold) {
     '</tr></table>';
 }
 
+/* ── Measure max content width per column ────────────── */
+function computeMaxWidths() {
+  var table = document.getElementById('reservations-table');
+  if (!table) return;
+  var ths = table.querySelectorAll('thead th');
+  maxColWidths = [];
+  ths.forEach(function(th, i) {
+    var max = th.scrollWidth;
+    table.querySelectorAll('tbody tr td:nth-child(' + (i + 1) + ')').forEach(function(td) {
+      max = Math.max(max, td.scrollWidth);
+    });
+    maxColWidths[i] = max;
+  });
+}
+
 /* ── Resizable columns ───────────────────────────────── */
 function initResizableColumns() {
   var table = document.getElementById('reservations-table');
@@ -294,8 +313,9 @@ function initResizableColumns() {
       document.body.style.userSelect = 'none';
 
       function onMove(e) {
-        var delta = e.pageX - startX;
-        var newW = Math.max(40, startW + delta);
+        var delta  = e.pageX - startX;
+        var maxW   = maxColWidths[i] || Infinity;
+        var newW   = Math.min(maxW, Math.max(40, startW + delta));
         if (targetCol) targetCol.style.width = newW + 'px';
       }
       function onUp() {
