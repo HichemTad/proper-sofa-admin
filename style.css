@@ -391,7 +391,7 @@ tbody tr:hover td:nth-child(10) { background: var(--surface-container-low); }
 /* ── Stats row ── */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
