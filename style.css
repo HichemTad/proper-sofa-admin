@@ -148,20 +148,16 @@ body {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: .3rem;
-  padding: 4px 10px;
+  padding: 2px 8px;
   border-radius: 20px;
-  font-size: .75rem;
+  font-size: .7rem;
   font-weight: 700;
   letter-spacing: .03em;
   white-space: nowrap;
 }
-.badge::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
 
 .badge-pending  { background: var(--warning-container); color: var(--warning); }
-.badge-pending::before  { background: var(--warning); }
 .badge-accepted { background: var(--success-container); color: var(--success); }
-.badge-accepted::before { background: var(--success); }
 
 /* ── Tabs / Filters ── */
 .tabs { display: flex; gap: .4rem; flex-wrap: wrap; }
@@ -243,6 +239,21 @@ tbody td {
 }
 .td-muted { color: var(--on-surface-variant); font-size: .85rem; }
 
+/* Column resize handle */
+thead th { position: relative; }
+
+.col-resizer {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 5px;
+  cursor: col-resize;
+  z-index: 1;
+  border-radius: 0 2px 2px 0;
+  transition: background .15s;
+}
+.col-resizer:hover,
+.col-resizer.active { background: var(--primary); opacity: .5; }
+
 /* ── Meuble drawer ── */
 .meuble-wrap {
   position: relative;
@@ -295,8 +306,8 @@ tbody td {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: none;
   background: var(--success-container);
@@ -304,7 +315,7 @@ tbody td {
   transition: background .18s, transform .15s, box-shadow .18s;
 }
 
-.btn-check img { width: 14px; height: 14px; }
+.btn-check img { width: 16px; height: 16px; }
 
 .btn-check:hover {
   background: #c8e6c9;

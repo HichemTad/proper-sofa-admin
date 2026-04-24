@@ -53,6 +53,7 @@ async function dbUpdate(id, fields) {
   });
 
   document.getElementById('refresh-btn').addEventListener('click', loadReservations);
+  initResizableColumns();
 
   document.getElementById('filter-tabs').addEventListener('click', function(e) {
     var tab = e.target.closest('.tab');
@@ -253,6 +254,51 @@ function row(label, value, color, bold) {
     '<td style="width:110px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#44464f;">' + esc(label) + '</td>' +
     '<td style="font-size:15px;color:' + color + ';' + (bold ? 'font-weight:700;' : '') + '">' + esc(value || '—') + '</td>' +
     '</tr></table>';
+}
+
+/* ── Resizable columns ───────────────────────────────── */
+function initResizableColumns() {
+  var table = document.getElementById('reservations-table');
+  if (!table) return;
+
+  var cols = table.querySelectorAll('colgroup col');
+  var ths  = table.querySelectorAll('thead th');
+
+  ths.forEach(function(th, i) {
+    if (!cols[i]) return;
+
+    // Snapshot initial rendered width into the colgroup
+    cols[i].style.width = th.offsetWidth + 'px';
+
+    var handle = document.createElement('div');
+    handle.className = 'col-resizer';
+    th.appendChild(handle);
+
+    var startX = 0, startW = 0;
+
+    handle.addEventListener('mousedown', function(e) {
+      startX = e.pageX;
+      startW = th.offsetWidth;
+      handle.classList.add('active');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+
+      function onMove(e) {
+        var newW = Math.max(48, startW + (e.pageX - startX));
+        cols[i].style.width = newW + 'px';
+      }
+      function onUp() {
+        handle.classList.remove('active');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  });
 }
 
 /* ── Meuble formatter ────────────────────────────────── */
