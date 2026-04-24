@@ -450,8 +450,15 @@ function toggleCalMenu(btn) {
     var rect = btn.getBoundingClientRect();
     var menu = wrap.querySelector('.cal-menu');
     if (menu) {
+      var menuW   = 164; /* min-width + border */
+      var margin  = 8;
+      var left    = rect.left;
+      /* si le menu dépasse le bord droit, on l'aligne sur le bord droit du bouton */
+      if (left + menuW > window.innerWidth - margin) {
+        left = Math.max(margin, rect.right - menuW);
+      }
       menu.style.top  = (rect.bottom + 4) + 'px';
-      menu.style.left = rect.left + 'px';
+      menu.style.left = left + 'px';
     }
   }
 }
