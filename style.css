@@ -185,13 +185,27 @@ body {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: .9rem;
+  font-size: .875rem;
+  table-layout: fixed;
+  min-width: 960px;
 }
 
+/* Column widths */
+table colgroup col:nth-child(1)  { width: 115px; } /* Référence */
+table colgroup col:nth-child(2)  { width: 90px;  } /* Date */
+table colgroup col:nth-child(3)  { width: 68px;  } /* Créneau */
+table colgroup col:nth-child(4)  { width: 120px; } /* Mobilier */
+table colgroup col:nth-child(5)  { width: 120px; } /* Client */
+table colgroup col:nth-child(6)  { width: 160px; } /* Email */
+table colgroup col:nth-child(7)  { width: 105px; } /* Téléphone */
+table colgroup col:nth-child(8)  { width: auto;  } /* Adresse */
+table colgroup col:nth-child(9)  { width: 95px;  } /* Statut */
+table colgroup col:nth-child(10) { width: 46px;  } /* Action */
+
 thead th {
-  padding: .75rem 1rem;
+  padding: .7rem 1rem;
   text-align: left;
-  font-size: .7rem;
+  font-size: .68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .07em;
@@ -199,6 +213,7 @@ thead th {
   background: var(--surface-container-low);
   border-bottom: 2px solid var(--surface-variant);
   white-space: nowrap;
+  overflow: hidden;
 }
 thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
 thead th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
@@ -211,9 +226,13 @@ tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: var(--surface-container-low); }
 
 tbody td {
-  padding: .875rem 1rem;
+  padding: .8rem 1rem;
   vertical-align: middle;
   color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0; /* required for ellipsis with table-layout:fixed */
 }
 
 .td-ref {
@@ -276,8 +295,8 @@ tbody td {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: none;
   background: var(--success-container);
@@ -285,15 +304,15 @@ tbody td {
   transition: background .18s, transform .15s, box-shadow .18s;
 }
 
+.btn-check img { width: 14px; height: 14px; }
+
 .btn-check:hover {
   background: #c8e6c9;
-  transform: scale(1.15);
-  box-shadow: 0 4px 14px rgba(46,125,50,.25);
+  transform: scale(1.18);
+  box-shadow: 0 3px 10px rgba(46,125,50,.28);
 }
 
-.btn-check:active {
-  transform: scale(.95);
-}
+.btn-check:active { transform: scale(.93); }
 
 .btn-check:disabled {
   opacity: .4;
@@ -302,8 +321,8 @@ tbody td {
 }
 
 .td-action {
-  width: 50px;
   text-align: center;
+  overflow: visible !important; /* don't clip the button */
 }
 
 /* ── Empty state ── */
