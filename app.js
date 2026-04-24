@@ -7,6 +7,8 @@ var EMAIL_FROM   = 'onboarding@resend.dev';
 /* ── State ───────────────────────────────────────────── */
 var allReservations = [];
 var currentFilter   = 'all';
+var sortCol         = null;   /* 'date' | 'statut' */
+var sortDir         = 1;      /* 1 = asc, -1 = desc */
 
 /* ── Supabase helpers (direct REST, no SDK) ──────────── */
 function supaHeaders() {
@@ -67,6 +69,20 @@ async function dbUpdate(id, fields) {
     }, { passive: false });
   }
 
+  document.querySelectorAll('.sort-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var col = btn.dataset.sort;
+      if (sortCol === col) {
+        sortDir = -sortDir;
+      } else {
+        sortCol = col;
+        sortDir = -1; /* premier clic = plus récent / en attente en premier */
+      }
+      updateSortUI();
+      renderTable();
+    });
+  });
+
   document.getElementById('filter-tabs').addEventListener('click', function(e) {
     var tab = e.target.closest('.tab');
     if (!tab) return;
@@ -116,10 +132,35 @@ function updateStickyOffsets() {
 }
 
 /* ── Render table ────────────────────────────────────── */
+function updateSortUI() {
+  document.querySelectorAll('.sort-btn').forEach(function(btn) {
+    btn.classList.remove('sort-asc', 'sort-desc');
+    if (btn.dataset.sort === sortCol) {
+      btn.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    }
+  });
+}
+
 function renderTable() {
   var rows = allReservations.filter(function(r) {
     return currentFilter === 'all' || r.statut === currentFilter;
   });
+
+  /* ── Sort ── */
+  if (sortCol) {
+    rows = rows.slice().sort(function(a, b) {
+      var va, vb;
+      if (sortCol === 'date') {
+        va = (a.date || '') + (a.heure || '');
+        vb = (b.date || '') + (b.heure || '');
+      } else {
+        /* statut : 'acceptee' | 'en_attente' */
+        va = a.statut || '';
+        vb = b.statut || '';
+      }
+      return sortDir * (va < vb ? -1 : va > vb ? 1 : 0);
+    });
+  }
 
   var tbody = document.getElementById('table-body');
 

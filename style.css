@@ -200,6 +200,24 @@ thead th {
 }
 thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
 
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0 0 5px;
+  opacity: .35;
+  transition: opacity .15s;
+  vertical-align: middle;
+}
+.sort-btn:hover { opacity: .7; }
+.sort-btn.sort-asc,
+.sort-btn.sort-desc { opacity: 1; }
+.sort-btn.sort-asc  img { transform: rotate(180deg); } /* flèche haut active */
+.sort-btn.sort-desc img { transform: none; }           /* flèche bas active  */
+
 tbody tr {
   transition: background .12s;
 }
