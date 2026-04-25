@@ -437,7 +437,7 @@ document.addEventListener('click', function(e) {
 function buildCommentButton(text) {
   return '<span class="comment-wrap">' +
     '<button class="btn-check btn-comment" title="Voir le commentaire" onclick="toggleCommentPopover(this)">' +
-    '<img src="asset/comment.svg" width="14" height="14" alt="Commentaire" />' +
+    '<img src="asset/comment.svg" width="14" height="14" alt="Commentaire" style="margin-left:2px" />' +
     '</button>' +
     '<div class="comment-popover">' + esc(text) + '</div>' +
     '</span>';
