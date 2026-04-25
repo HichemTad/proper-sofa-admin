@@ -561,6 +561,7 @@ function buildGoogleUrl(d) {
 }
 
 function downloadIcs(d) {
+  console.log('[ICS] commentaire =', JSON.stringify(d.commentaire));
   var ics = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
