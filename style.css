@@ -544,6 +544,88 @@ tbody tr:hover td:nth-child(11) { background: var(--surface-container-low); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* ── Calendar modal ── */
+.cal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+  animation: modal-bg-in .2s ease;
+}
+.cal-modal-overlay[hidden] { display: none; }
+
+.cal-modal {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem 2rem 1.75rem;
+  max-width: 380px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 12px 40px rgba(0,0,0,.18);
+  animation: modal-in .25s cubic-bezier(.34,1.56,.64,1);
+  text-align: center;
+}
+
+.cal-modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: var(--surface-container);
+  border: none;
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--on-surface-variant);
+  transition: background .15s;
+}
+.cal-modal-close:hover { background: var(--surface-container-high); }
+
+.cal-modal-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: var(--primary-container);
+  color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.cal-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 .6rem;
+  font-family: 'Fira Sans', sans-serif;
+}
+
+.cal-modal-desc {
+  font-size: .875rem;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.cal-modal-btn {
+  width: 100%;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1rem;
+}
+
+@keyframes modal-bg-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(.9) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 /* ── Page layout ── */
 .page-wrap {
   max-width: 1200px;

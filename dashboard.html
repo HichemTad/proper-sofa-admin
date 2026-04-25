@@ -92,6 +92,24 @@
 <!-- ── Toast container ── -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
+<!-- ── Calendar modal ── -->
+<div class="cal-modal-overlay" id="cal-modal-overlay" hidden>
+  <div class="cal-modal" role="dialog" aria-modal="true" aria-labelledby="cal-modal-title">
+    <button class="cal-modal-close" id="cal-modal-close" aria-label="Fermer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="cal-modal-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <h2 class="cal-modal-title" id="cal-modal-title">Réservation confirmée ✓</h2>
+    <p class="cal-modal-desc" id="cal-modal-desc"></p>
+    <button class="btn btn-primary cal-modal-btn" id="cal-modal-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Ajouter à l'agenda
+    </button>
+  </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>

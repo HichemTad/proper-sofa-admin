@@ -309,9 +309,7 @@ async function acceptReservation(id, ref, date, heure, meuble, nom, email, lang,
     employee_phone:currentUserProfile ? currentUserProfile.telephone    : null,
   });
 
-  if (emailOk) {
-    showToast('Réservation ' + ref + ' acceptée — email envoyé à ' + email, 'success');
-  } else {
+  if (!emailOk) {
     showToast('Statut mis à jour, mais l\'email n\'a pas pu être envoyé.', 'error');
   }
 
@@ -319,7 +317,65 @@ async function acceptReservation(id, ref, date, heure, meuble, nom, email, lang,
   if (idx !== -1) allReservations[idx].statut = 'acceptee';
   updateStats();
   renderTable();
+
+  showCalendarModal({ ref: ref, date: date, heure: heure, nom: nom, adresse: adresse, meuble: meuble });
 }
+
+/* ── Calendar modal ─────────────────────────────────── */
+function showCalendarModal(opts) {
+  var slotMap = { '08:00': { start: '08', end: '10' }, '10:00': { start: '10', end: '12' },
+                  '14:00': { start: '14', end: '16' }, '16:00': { start: '16', end: '18' } };
+  var slot    = slotMap[opts.heure] || { start: '08', end: '10' };
+  var dateParts = String(opts.date).split('-'); /* [YYYY, MM, DD] */
+  var dtStart = dateParts[0] + dateParts[1] + dateParts[2] + 'T' + slot.start + '0000';
+  var dtEnd   = dateParts[0] + dateParts[1] + dateParts[2] + 'T' + slot.end   + '0000';
+
+  var displayDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2])
+    .toLocaleDateString('fr-BE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var displaySlot = slot.start + 'h – ' + slot.end + 'h';
+
+  /* ICS content */
+  var ics = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Proper Sofa//Admin//FR',
+    'BEGIN:VEVENT',
+    'DTSTART:' + dtStart,
+    'DTEND:'   + dtEnd,
+    'SUMMARY:Nettoyage Proper Sofa – ' + opts.ref,
+    'DESCRIPTION:Client\\: ' + opts.nom + '\\nMobilier\\: ' + opts.meuble,
+    'LOCATION:' + (opts.adresse || ''),
+    'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+
+  var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+
+  /* Fill modal */
+  document.getElementById('cal-modal-desc').textContent =
+    'N\'oubliez pas d\'ajouter ce rendez-vous à votre agenda — ' +
+    displayDate + ' de ' + displaySlot + ' chez ' + opts.nom + '.';
+
+  var dlBtn = document.getElementById('cal-modal-btn');
+  dlBtn.onclick = function() {
+    var a = document.createElement('a');
+    a.href = url; a.download = 'reservation-' + opts.ref + '.ics';
+    a.click();
+    URL.revokeObjectURL(url);
+    closeCalendarModal();
+  };
+
+  document.getElementById('cal-modal-overlay').hidden = false;
+}
+
+function closeCalendarModal() {
+  document.getElementById('cal-modal-overlay').hidden = true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('cal-modal-close').addEventListener('click', closeCalendarModal);
+  document.getElementById('cal-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeCalendarModal();
+  });
+});
 
 /* ── Send email via Edge Function ────────────────────── */
 async function sendConfirmationEmail(payload) {
