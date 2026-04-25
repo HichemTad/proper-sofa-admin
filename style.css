@@ -317,16 +317,20 @@ tbody td:nth-child(10) {
 /* Action */
 thead th:nth-child(11) {
   right: -1px;
-  width: 52px;
+  width: 80px;
   text-align: center;
   background: var(--surface-container-low);
   border-radius: 0 var(--radius-sm) 0 0;
 }
 tbody td:nth-child(11) {
   right: -1px;
-  width: 52px;
+  width: 80px;
   text-align: center;
   background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 tbody tr:hover td:nth-child(10),
@@ -336,11 +340,33 @@ tbody tr:hover td:nth-child(11) { background: var(--surface-container-low); }
 /* ── Calendar button & menu ── */
 .cal-wrap { position: relative; display: inline-block; }
 
-.btn-check.btn-cal { background: var(--surface-container); }
-.btn-check.btn-cal:hover {
+.btn-check.btn-cal,
+.btn-check.btn-comment { background: var(--surface-container); }
+.btn-check.btn-cal:hover,
+.btn-check.btn-comment:hover {
   background: var(--surface-container-high);
   box-shadow: 0 3px 10px rgba(0,0,0,.12);
 }
+
+.comment-wrap { position: relative; display: inline-block; }
+
+.comment-popover {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  background: #fff;
+  border: 1.5px solid var(--surface-variant);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  padding: .65rem .85rem;
+  max-width: 260px;
+  font-size: .85rem;
+  color: var(--on-surface);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.comment-wrap.open .comment-popover { display: block; }
 
 .cal-menu {
   display: none;

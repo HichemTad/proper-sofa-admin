@@ -193,6 +193,10 @@ function renderTable() {
       ? '<span class="badge badge-pending">En attente</span>'
       : '<span class="badge badge-accepted">Acceptée</span>';
 
+    var commentBtn = r.commentaire
+      ? buildCommentButton(r.commentaire)
+      : '';
+
     var action = isPending
       ? '<button class="btn-check accept-btn"' +
         ' title="Accepter cette réservation"' +
@@ -204,8 +208,8 @@ function renderTable() {
         ' data-nom="'    + esc(r.nom)         + '"' +
         ' data-email="'  + esc(r.email)       + '">' +
         '<img src="asset/Check.svg" width="20" height="20" alt="Accepter" />' +
-        '</button>'
-      : buildCalButton(r);
+        '</button>' + commentBtn
+      : buildCalButton(r) + commentBtn;
 
     var heure  = r.heure ? r.heure.slice(0,5) : '—';
     var adresse = r.adresse || '—';
@@ -408,7 +412,7 @@ function toggleDrawer(btn) {
   }
 }
 
-// Close drawers / cal menus when clicking outside
+// Close drawers / cal menus / comment popovers when clicking outside
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.meuble-wrap')) {
     document.querySelectorAll('.meuble-wrap.open').forEach(function(w) { w.classList.remove('open'); });
@@ -420,7 +424,59 @@ document.addEventListener('click', function(e) {
       if (parentTd) parentTd.style.zIndex = '';
     });
   }
+  if (!e.target.closest('.comment-wrap')) {
+    document.querySelectorAll('.comment-wrap.open').forEach(function(w) {
+      w.classList.remove('open');
+      var parentTd = w.closest('td');
+      if (parentTd) parentTd.style.zIndex = '';
+    });
+  }
 });
+
+/* ── Comment button ──────────────────────────────────── */
+function buildCommentButton(text) {
+  return '<span class="comment-wrap">' +
+    '<button class="btn-check btn-comment" title="Voir le commentaire" onclick="toggleCommentPopover(this)">' +
+    '<img src="asset/comment.svg" width="16" height="16" alt="Commentaire" />' +
+    '</button>' +
+    '<div class="comment-popover">' + esc(text) + '</div>' +
+    '</span>';
+}
+
+function toggleCommentPopover(btn) {
+  var wrap   = btn.closest('.comment-wrap');
+  var td     = btn.closest('td');
+  var isOpen = !wrap.classList.contains('open');
+
+  /* close everything */
+  document.querySelectorAll('.comment-wrap.open').forEach(function(w) {
+    w.classList.remove('open');
+    var parentTd = w.closest('td');
+    if (parentTd) parentTd.style.zIndex = '';
+  });
+  document.querySelectorAll('.cal-wrap.open').forEach(function(w) {
+    w.classList.remove('open');
+    var parentTd = w.closest('td');
+    if (parentTd) parentTd.style.zIndex = '';
+  });
+
+  if (isOpen) {
+    wrap.classList.add('open');
+    if (td) td.style.zIndex = '200';
+    var rect    = btn.getBoundingClientRect();
+    var popover = wrap.querySelector('.comment-popover');
+    if (popover) {
+      var popW   = 260;
+      var margin = 8;
+      var left   = rect.left;
+      if (left + popW > window.innerWidth - margin) {
+        left = Math.max(margin, rect.right - popW);
+      }
+      popover.style.top  = (rect.bottom + 4) + 'px';
+      popover.style.left = left + 'px';
+    }
+  }
+}
 
 /* ── Calendar button ─────────────────────────────────── */
 function buildCalButton(r) {
