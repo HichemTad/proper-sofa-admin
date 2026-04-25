@@ -325,41 +325,30 @@ async function acceptReservation(id, ref, date, heure, meuble, nom, email, lang,
 function showCalendarModal(opts) {
   var slotMap = { '08:00': { start: '08', end: '10' }, '10:00': { start: '10', end: '12' },
                   '14:00': { start: '14', end: '16' }, '16:00': { start: '16', end: '18' } };
-  var slot    = slotMap[opts.heure] || { start: '08', end: '10' };
+  var slot      = slotMap[opts.heure] || { start: '08', end: '10' };
   var dateParts = String(opts.date).split('-'); /* [YYYY, MM, DD] */
-  var dtStart = dateParts[0] + dateParts[1] + dateParts[2] + 'T' + slot.start + '0000';
-  var dtEnd   = dateParts[0] + dateParts[1] + dateParts[2] + 'T' + slot.end   + '0000';
+  var dtStart   = dateParts[0] + dateParts[1] + dateParts[2] + 'T' + slot.start + '0000';
+  var dtEnd     = dateParts[0] + dateParts[1] + dateParts[2] + 'T' + slot.end   + '0000';
 
   var displayDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2])
     .toLocaleDateString('fr-BE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   var displaySlot = slot.start + 'h – ' + slot.end + 'h';
 
-  /* ICS content */
-  var ics = [
-    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Proper Sofa//Admin//FR',
-    'BEGIN:VEVENT',
-    'DTSTART:' + dtStart,
-    'DTEND:'   + dtEnd,
-    'SUMMARY:Nettoyage Proper Sofa – ' + opts.ref,
-    'DESCRIPTION:Client\\: ' + opts.nom + '\\nMobilier\\: ' + opts.meuble,
-    'LOCATION:' + (opts.adresse || ''),
-    'END:VEVENT', 'END:VCALENDAR'
-  ].join('\r\n');
-
-  var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-  var url  = URL.createObjectURL(blob);
+  /* Google Calendar URL */
+  var gcUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    '&text='     + encodeURIComponent('Nettoyage Proper Sofa – ' + opts.ref) +
+    '&dates='    + dtStart + '/' + dtEnd +
+    '&details='  + encodeURIComponent('Client : ' + opts.nom + '\nMobilier : ' + opts.meuble) +
+    '&location=' + encodeURIComponent(opts.adresse || '');
 
   /* Fill modal */
   document.getElementById('cal-modal-desc').textContent =
-    'N\'oubliez pas d\'ajouter ce rendez-vous à votre agenda — ' +
+    'N’oubliez pas d’ajouter ce rendez-vous à votre agenda — ' +
     displayDate + ' de ' + displaySlot + ' chez ' + opts.nom + '.';
 
-  var dlBtn = document.getElementById('cal-modal-btn');
-  dlBtn.onclick = function() {
-    var a = document.createElement('a');
-    a.href = url; a.download = 'reservation-' + opts.ref + '.ics';
-    a.click();
-    URL.revokeObjectURL(url);
+  var btn = document.getElementById('cal-modal-btn');
+  btn.onclick = function() {
+    window.open(gcUrl, '_blank');
     closeCalendarModal();
   };
 
