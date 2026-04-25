@@ -488,8 +488,9 @@ function buildCalButton(r) {
     ' data-nom="'    + esc(r.nom)            + '"' +
     ' data-meuble="' + esc(r.type_meuble)    + '"' +
     ' data-adresse="'+ esc(r.adresse || '')  + '"' +
-    ' data-email="'  + esc(r.email || '')    + '"' +
-    ' data-tel="'    + esc(r.telephone || '')+ '">' +
+    ' data-email="'       + esc(r.email || '')         + '"' +
+    ' data-tel="'         + esc(r.telephone || '')     + '"' +
+    ' data-commentaire="' + esc(r.commentaire || '')   + '">' +
     '<img src="asset/calendar.svg" width="16" height="16" alt="Calendrier" />' +
     '</button>' +
     '<div class="cal-menu">' +
@@ -569,11 +570,12 @@ function downloadIcs(d) {
     'DTEND:'     + calDt(d.date, d.heure, 2),
     'SUMMARY:PS Nettoyage - ' + d.nom,
     'DESCRIPTION:Client : '    + d.nom           +
-      '\\nTéléphone : '        + (d.tel      || '—') +
-      '\\nEmail : '            + (d.email    || '—') +
+      '\\nTéléphone : '        + (d.tel          || '—') +
+      '\\nEmail : '            + (d.email        || '—') +
       '\\nMobilier : '         + d.meuble         +
-      '\\nAdresse : '          + (d.adresse  || '—') +
-      '\\nRéférence : '        + d.ref,
+      '\\nAdresse : '          + (d.adresse      || '—') +
+      '\\nRéférence : '        + d.ref            +
+      (d.commentaire ? '\\nCommentaire : ' + d.commentaire : ''),
     'LOCATION:'  + (d.adresse || ''),
     'END:VEVENT',
     'END:VCALENDAR'
