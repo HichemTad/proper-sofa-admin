@@ -1,14 +1,13 @@
 /* ── Config ─────────────────────────────────────────── */
 var SUPA_URL     = 'https://xiyfxsoiaclvdkphqpty.supabase.co';
 var SUPA_SERVICE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpeWZ4c29pYWNsdmRrcGhxcHR5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjkxMTczNiwiZXhwIjoyMDkyNDg3NzM2fQ.IHDlxNHJVOi5cBHOZjLkh67Rbsjq9qgeP_0kLt3vmtw';
-var RESEND_KEY   = 're_J4rkZ3Ww_9xFDneu53YRJqwTntDoiSt3Q';
-var EMAIL_FROM   = 'onboarding@resend.dev';
 
 /* ── State ───────────────────────────────────────────── */
-var allReservations = [];
-var currentFilter   = 'all';
-var sortCol         = null;   /* 'date' | 'statut' */
-var sortDir         = 1;      /* 1 = asc, -1 = desc */
+var allReservations    = [];
+var currentFilter      = 'all';
+var sortCol            = null;   /* 'date' | 'statut' */
+var sortDir            = 1;      /* 1 = asc, -1 = desc */
+var currentUserProfile = null;   /* { display_name, telephone } */
 
 /* ── Supabase helpers (direct REST, no SDK) ──────────── */
 function supaHeaders() {
@@ -36,8 +35,20 @@ async function dbUpdate(id, fields) {
   if (!res.ok) throw new Error(await res.text());
 }
 
+async function fetchProfile(email) {
+  try {
+    var res = await fetch(
+      SUPA_URL + '/rest/v1/profiles?email=eq.' + encodeURIComponent(email) + '&select=display_name,telephone&limit=1',
+      { headers: supaHeaders() }
+    );
+    if (!res.ok) return null;
+    var data = await res.json();
+    return data[0] || null;
+  } catch(e) { return null; }
+}
+
 /* ── Boot ────────────────────────────────────────────── */
-(function init() {
+(async function init() {
   var token = localStorage.getItem('ps_admin_token');
   if (!token || !token.startsWith('eyJ')) {
     localStorage.removeItem('ps_admin_token');
@@ -46,7 +57,9 @@ async function dbUpdate(id, fields) {
   }
 
   var email = localStorage.getItem('ps_admin_email') || '';
-  document.getElementById('nav-user').textContent = email;
+  currentUserProfile = await fetchProfile(email);
+  var displayName = (currentUserProfile && currentUserProfile.display_name) || email;
+  document.getElementById('nav-user').textContent = displayName;
 
   document.getElementById('logout-btn').addEventListener('click', function() {
     localStorage.removeItem('ps_admin_token');
@@ -200,13 +213,17 @@ function renderTable() {
     var action = isPending
       ? '<button class="btn-check accept-btn"' +
         ' title="Accepter cette réservation"' +
-        ' data-id="'     + esc(r.id)          + '"' +
-        ' data-ref="'    + esc(r.reference)   + '"' +
-        ' data-date="'   + esc(r.date)        + '"' +
-        ' data-heure="'  + esc(r.heure)       + '"' +
-        ' data-meuble="' + esc(r.type_meuble) + '"' +
-        ' data-nom="'    + esc(r.nom)         + '"' +
-        ' data-email="'  + esc(r.email)       + '">' +
+        ' data-id="'          + esc(r.id)                  + '"' +
+        ' data-ref="'         + esc(r.reference)           + '"' +
+        ' data-date="'        + esc(r.date)                + '"' +
+        ' data-heure="'       + esc(r.heure)               + '"' +
+        ' data-meuble="'      + esc(r.type_meuble)         + '"' +
+        ' data-nom="'         + esc(r.nom)                 + '"' +
+        ' data-email="'       + esc(r.email)               + '"' +
+        ' data-lang="'        + esc(r.lang || 'fr')        + '"' +
+        ' data-adresse="'     + esc(r.adresse || '')       + '"' +
+        ' data-prix="'        + esc(r.prix_total != null ? r.prix_total : '') + '"' +
+        ' data-commentaire="' + esc(r.commentaire || '')   + '">' +
         '<img src="asset/Check.svg" width="20" height="20" alt="Accepter" />' +
         '</button>' + commentBtn
       : buildCalButton(r) + commentBtn;
@@ -234,8 +251,10 @@ function renderTable() {
   tbody.querySelectorAll('.accept-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       acceptReservation(
-        btn.dataset.id,  btn.dataset.ref,   btn.dataset.date,
-        btn.dataset.heure, btn.dataset.meuble, btn.dataset.nom, btn.dataset.email
+        btn.dataset.id,    btn.dataset.ref,    btn.dataset.date,
+        btn.dataset.heure, btn.dataset.meuble, btn.dataset.nom,
+        btn.dataset.email, btn.dataset.lang,   btn.dataset.adresse,
+        btn.dataset.prix,  btn.dataset.commentaire
       );
     });
   });
@@ -262,7 +281,7 @@ function renderTable() {
 }
 
 /* ── Accept reservation ──────────────────────────────── */
-async function acceptReservation(id, ref, date, heure, meuble, nom, email) {
+async function acceptReservation(id, ref, date, heure, meuble, nom, email, lang, adresse, prix, commentaire) {
   var btn = document.querySelector('.accept-btn[data-id="' + id + '"]');
   if (btn) { btn.disabled = true; btn.textContent = '…'; }
 
@@ -274,7 +293,21 @@ async function acceptReservation(id, ref, date, heure, meuble, nom, email) {
     return;
   }
 
-  var emailOk = await sendConfirmationEmail(email, nom, ref, date, heure, meuble);
+  var emailOk = await sendConfirmationEmail({
+    type:          'confirmation',
+    reference:     ref,
+    date:          date,
+    heure:         heure,
+    type_meuble:   meuble,
+    nom:           nom,
+    email:         email,
+    adresse:       adresse || '',
+    prix_total:    prix ? parseInt(prix) : null,
+    commentaire:   commentaire || null,
+    lang:          lang || 'fr',
+    employee_name: currentUserProfile ? currentUserProfile.display_name : 'Proper Sofa',
+    employee_phone:currentUserProfile ? currentUserProfile.telephone    : null,
+  });
 
   if (emailOk) {
     showToast('Réservation ' + ref + ' acceptée — email envoyé à ' + email, 'success');
@@ -288,72 +321,20 @@ async function acceptReservation(id, ref, date, heure, meuble, nom, email) {
   renderTable();
 }
 
-/* ── Send email via Resend ───────────────────────────── */
-async function sendConfirmationEmail(to, nom, ref, date, heure, meuble) {
-  var prenom = nom.split(' ')[0];
+/* ── Send email via Edge Function ────────────────────── */
+async function sendConfirmationEmail(payload) {
   try {
-    var res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + RESEND_KEY
-      },
-      body: JSON.stringify({
-        from:    'Proper Sofa <' + EMAIL_FROM + '>',
-        to:      [to],
-        subject: 'Votre réservation ' + ref + ' est confirmée ✓',
-        html:    buildEmailHtml(prenom, ref, date, heure, meuble)
-      })
+    var res = await fetch(SUPA_URL + '/functions/v1/send-confirmation-email', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_SERVICE },
+      body:    JSON.stringify(payload)
     });
-    var data = await res.json();
-    console.log('[Resend]', res.status, JSON.stringify(data));
+    console.log('[Email]', res.status, await res.text());
     return res.ok;
   } catch(e) {
-    console.error('[Resend error]', e);
+    console.error('[Email error]', e);
     return false;
   }
-}
-
-/* ── Email HTML template ─────────────────────────────── */
-function buildEmailHtml(prenom, ref, date, heure, meuble) {
-  var h = heure ? heure.slice(0, 5) : '—';
-  return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/></head>' +
-  '<body style="margin:0;padding:0;background:#f7f9ff;font-family:Arial,sans-serif;">' +
-  '<table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;">' +
-  '<tr><td align="center"><table width="100%" style="max-width:560px;">' +
-
-  '<tr><td style="background:#485d92;border-radius:20px 20px 0 0;padding:32px 40px;text-align:center;">' +
-  '<p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.65);">Proper Sofa</p>' +
-  '<h1 style="margin:0;font-size:24px;font-weight:700;color:#fff;">Réservation confirmée ✓</h1>' +
-  '</td></tr>' +
-
-  '<tr><td style="background:#fff;padding:36px 40px;border-radius:0 0 20px 20px;box-shadow:0 4px 40px rgba(0,0,0,.07);">' +
-  '<p style="margin:0 0 20px;font-size:16px;color:#181c20;">Bonjour <strong>' + esc(prenom) + '</strong>,</p>' +
-  '<p style="margin:0 0 28px;font-size:15px;color:#44464f;line-height:1.7;">Nous confirmons votre réservation. Notre équipe sera présente au créneau convenu pour nettoyer vos tissus d\'ameublement.</p>' +
-
-  '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f4f9;border-radius:14px;padding:24px;margin-bottom:28px;">' +
-  '<tr><td>' +
-  row('Référence', ref,            '#485d92', true) +
-  row('Date',      formatDate(date), '#181c20', false) +
-  row('Créneau',   h,               '#181c20', false) +
-  row('Mobilier',  meuble,          '#181c20', false) +
-  '</td></tr></table>' +
-
-  '<p style="margin:0;font-size:15px;color:#181c20;line-height:1.7;">À très bientôt,<br/><strong>L\'équipe Proper Sofa</strong></p>' +
-  '</td></tr>' +
-
-  '<tr><td style="padding:20px 0;text-align:center;">' +
-  '<p style="margin:0;font-size:12px;color:#44464f;">© ' + new Date().getFullYear() + ' Proper Sofa</p>' +
-  '</td></tr>' +
-
-  '</table></td></tr></table></body></html>';
-}
-
-function row(label, value, color, bold) {
-  return '<table width="100%" cellpadding="4" cellspacing="0" style="margin-bottom:8px;"><tr>' +
-    '<td style="width:110px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#44464f;">' + esc(label) + '</td>' +
-    '<td style="font-size:15px;color:' + color + ';' + (bold ? 'font-weight:700;' : '') + '">' + esc(value || '—') + '</td>' +
-    '</tr></table>';
 }
 
 
