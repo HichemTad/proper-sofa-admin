@@ -327,6 +327,8 @@ tbody td:nth-child(11) {
   width: 80px;
   text-align: center;
   background: #fff;
+}
+.action-inner {
   display: flex;
   align-items: center;
   justify-content: center;

@@ -225,7 +225,7 @@ function renderTable() {
       '<td class="td-muted" title="'  + esc(r.telephone) + '">' + esc(r.telephone)  + '</td>' +
       '<td class="td-prix">'          + (r.prix_total != null ? r.prix_total + ' €' : '—') + '</td>' +
       '<td>'                          + badge                                         + '</td>' +
-      '<td class="td-action">'        + action                                        + '</td>' +
+      '<td class="td-action"><div class="action-inner">' + action + '</div></td>' +
       '</tr>';
   }).join('');
 
